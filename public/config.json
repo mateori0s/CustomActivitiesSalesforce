@@ -1,0 +1,89 @@
+{
+    "workflowApiVersion": "1.1",
+    "metaData": {
+        "icon": "images/icon.png",
+        "iconSmall": "images/iconSmall.png",
+        "category": "message"
+    },
+    "type": "REST",
+    "lang": {
+        "en-US": {
+            "name": "<NAME_HERE>",
+            "description": "<DESCRIPTION_HERE>",
+            "step1Label": "Configure Activity"
+        }
+    },
+    "arguments": {
+        "execute": {
+            "inArguments": [
+                { "subscriberKey": "" },
+                { "phoneNumber": "" },
+                { "message": "" }
+            ],
+            "outArguments": [],
+            "url": "https://<HOST_HERE>.com/journeybuilder/execute",
+            "verb": "POST",
+            "body": "",
+            "header": "",
+            "format": "json",
+            "useJwt": true,
+            "timeout": 10000
+        }
+    },
+    "configurationArguments": {
+        "applicationExtensionKey": "<APPLICATION_EXTENSION_KEY_HERE>",
+        "save": {
+            "url": "https://<HOST_HERE>.com/journeybuilder/save",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "publish": {
+            "url": "https://<HOST_HERE>/journeybuilder/publish",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "stop": {
+            "url": "https://<HOST_HERE>/journeybuilder/stop",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "validate": {
+            "url": "https://<HOST_HERE>/journeybuilder/validate",
+            "verb": "POST",
+            "useJwt": true
+        }
+    },
+    "userInterfaces": {
+        "configModal": {
+            "height": 700,
+            "width": 1000,
+            "fullscreen": false
+        }
+    },
+    "schema": {
+        "arguments":{
+            "execute": {
+                "inArguments": [
+                    {
+                        "phoneNumber": {
+                            "dataType": "Phone",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "subscriberKey": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "message": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        }
+                    }
+                ],
+                "outArguments": []
+            }
+        }
+    }
+}
