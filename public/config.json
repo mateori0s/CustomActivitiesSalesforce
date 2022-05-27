@@ -38,17 +38,17 @@
             "useJwt": true
         },
         "publish": {
-            "url": "https://radiant-fortress-51852-2.herokuapp/journeybuilder/publish",
+            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/publish",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "https://radiant-fortress-51852-2.herokuapp/journeybuilder/stop",
+            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/stop",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "https://radiant-fortress-51852-2.herokuapp/journeybuilder/validate",
+            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/validate",
             "verb": "POST",
             "useJwt": true
         }
