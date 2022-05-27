@@ -8,8 +8,8 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "<NAME_HERE>",
-            "description": "<DESCRIPTION_HERE>",
+            "name": "Tutorial Dylan",
+            "description": "Tutorial Dylan Description",
             "step1Label": "Configure Activity"
         }
     },
@@ -21,7 +21,7 @@
                 { "message": "" }
             ],
             "outArguments": [],
-            "url": "https://<HOST_HERE>.com/journeybuilder/execute",
+            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/execute",
             "verb": "POST",
             "body": "",
             "header": "",
@@ -31,24 +31,24 @@
         }
     },
     "configurationArguments": {
-        "applicationExtensionKey": "<APPLICATION_EXTENSION_KEY_HERE>",
+        "applicationExtensionKey": "eef1dca0-80c5-4b49-a378-32af6531f0a3",
         "save": {
-            "url": "https://<HOST_HERE>.com/journeybuilder/save",
+            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/save",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "https://<HOST_HERE>/journeybuilder/publish",
+            "url": "https://radiant-fortress-51852-2.herokuapp/journeybuilder/publish",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "https://<HOST_HERE>/journeybuilder/stop",
+            "url": "https://radiant-fortress-51852-2.herokuapp/journeybuilder/stop",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "https://<HOST_HERE>/journeybuilder/validate",
+            "url": "https://radiant-fortress-51852-2.herokuapp/journeybuilder/validate",
             "verb": "POST",
             "useJwt": true
         }
