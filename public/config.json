@@ -31,7 +31,7 @@
         }
     },
     "configurationArguments": {
-        "applicationExtensionKey": "d59350d6-fe57-4d6f-b7bf-097359278d23",
+        "applicationExtensionKey": "eef1dca0-80c5-4b49-a378-32af6531f0a3",
         "save": {
             "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/save",
             "verb": "POST",
