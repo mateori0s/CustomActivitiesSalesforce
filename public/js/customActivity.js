@@ -54,8 +54,8 @@ define(['postmonger'], function (Postmonger) {
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
             { id: `{{Event.${eventDefinitionKey}.id}}` },
             { lastname: `{{Event.${eventDefinitionKey}.lastname}}` },
-            { phoneNumber: `{{Event.${eventDefinitionKey}.phoneNumber}}` },
-            { subscriberKey: `{{Event.${eventDefinitionKey}.subscriberKey}}` }
+            { phone: `{{Event.${eventDefinitionKey}.phone}}` },
+            { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);

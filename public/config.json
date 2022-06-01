@@ -21,8 +21,8 @@
                 { "firstname": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.firstname}}" },
                 { "id": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.id}}" },
                 { "lastname": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.lastname}}" },
-                { "phoneNumber": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.phoneNumber}}" },
-                { "subscriberKey": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.subscriberKey}}" }
+                { "phone": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.phoneNumber}}" },
+                { "claveSuscriptor": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.subscriberKey}}" }
             ],
             "outArguments": [],
             "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/execute",
@@ -94,12 +94,12 @@
                             "isNullable": false,
                             "direction": "in"
                         },
-                        "phoneNumber": {
+                        "phone": {
                             "dataType": "Phone",
                             "isNullable": false,
                             "direction": "in"
                         },
-                        "subscriberKey": {
+                        "claveSuscriptor": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
