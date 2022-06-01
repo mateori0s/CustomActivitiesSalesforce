@@ -17,7 +17,7 @@
         "execute": {
             "inArguments": [
                 { "subscriberKey": "{{Contact.Key}}" },
-                { "phoneNumber": "" },
+                { "phoneNumber": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.phoneNumber}}" },
                 { "message": "" }
             ],
             "outArguments": [],
