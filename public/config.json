@@ -16,7 +16,7 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "subscriberKey": "" },
+                { "subscriberKey": "{{Contact.Key}}" },
                 { "phoneNumber": "" },
                 { "message": "" }
             ],
