@@ -50,8 +50,8 @@ define(['postmonger'], function (Postmonger) {
         payload['arguments'].execute.inArguments = [
             {   
                 message: messageValue.value,
-                subscriberKey: `{{Event.${eventDefinitionKey}.SubscriberKey}}`,
-                phoneNumber: `{{Event.${eventDefinitionKey}.PhoneNumber}}`
+                subscriberKey: `{{Event.${eventDefinitionKey}.subscriberKey}}`,
+                phoneNumber: `{{Event.${eventDefinitionKey}.phoneNumber}}`
             }
         ];
         payload['metaData'].isConfigured = true;
