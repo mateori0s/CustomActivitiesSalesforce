@@ -16,9 +16,13 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "subscriberKey": "{{Contact.Key}}" },
+                { "age": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.age}}" },
+                { "email": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.email}}" },
+                { "firstname": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.firstname}}" },
+                { "id": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.id}}" },
+                { "lastname": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.lastname}}" },
                 { "phoneNumber": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.phoneNumber}}" },
-                { "message": "" }
+                { "subscriberKey": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.subscriberKey}}" }
             ],
             "outArguments": [],
             "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/execute",
@@ -65,17 +69,37 @@
             "execute": {
                 "inArguments": [
                     {
+                        "age": {
+                            "dataType": "Number",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "email": {
+                            "dataType": "Email",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "firstname": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "id": {
+                            "dataType": "Number",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "lastname": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
                         "phoneNumber": {
                             "dataType": "Phone",
                             "isNullable": false,
                             "direction": "in"
                         },
                         "subscriberKey": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "message": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"

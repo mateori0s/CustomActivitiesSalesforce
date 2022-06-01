@@ -48,11 +48,14 @@ define(['postmonger'], function (Postmonger) {
     function save() {
         const messageValue = document.getElementById('messageText');
         payload['arguments'].execute.inArguments = [
-            {   
-                message: messageValue.value,
-                subscriberKey: `{{Event.${eventDefinitionKey}.subscriberKey}}`,
-                phoneNumber: `{{Event.${eventDefinitionKey}.phoneNumber}}`
-            }
+            { message: messageValue.value },
+            { age: `{{Event.${eventDefinitionKey}.age}}` },
+            { email: `{{Event.${eventDefinitionKey}.email}}` },
+            { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
+            { id: `{{Event.${eventDefinitionKey}.id}}` },
+            { lastname: `{{Event.${eventDefinitionKey}.lastname}}` },
+            { phoneNumber: `{{Event.${eventDefinitionKey}.phoneNumber}}` },
+            { subscriberKey: `{{Event.${eventDefinitionKey}.subscriberKey}}` }
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
