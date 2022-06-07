@@ -16,16 +16,16 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "age": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.age}}" },
-                { "email": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.email}}" },
-                { "firstname": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.firstname}}" },
-                { "id": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.id}}" },
-                { "lastname": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.lastname}}" },
-                { "phone": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.phoneNumber}}" },
-                { "claveSuscriptor": "{{Event.APIEvent-d12f1177-1e69-ec7c-83cd-37df8396a668.subscriberKey}}" }
+                { "age": "" },
+                { "email": "" },
+                { "firstname": "" },
+                { "id": "" },
+                { "lastname": "" },
+                { "phone": "" },
+                { "claveSuscriptor": "" }
             ],
             "outArguments": [],
-            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/execute",
+            "url": "https://function-sfmc-jb-generic-custom-activity-twomx3u5aq-rj.a.run.app/journeybuilder/execute",
             "verb": "POST",
             "body": "",
             "header": "",
