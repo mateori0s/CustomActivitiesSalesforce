@@ -1,7 +1,7 @@
 {
-  "name": "smsTemplate",
+  "name": "ca-cdp-claro",
   "version": "1.0.1",
-  "description": "Send SMS Journey Builder",
+  "description": "CA CDP Claro Journey Builder",
   "engines": {
     "node": "^12.12.16"
   },

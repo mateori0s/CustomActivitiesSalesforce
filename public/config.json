@@ -8,8 +8,8 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "Tutorial Dylan",
-            "description": "Tutorial Dylan Description",
+            "name": "CA CDP Claro",
+            "description": "Servidor para las Custom Activities de CA CDP Claro.",
             "step1Label": "Configure Activity"
         }
     },
@@ -25,7 +25,7 @@
                 { "claveSuscriptor": "" }
             ],
             "outArguments": [],
-            "url": "https://function-sfmc-jb-generic-custom-activity-twomx3u5aq-rj.a.run.app/journeybuilder/execute",
+            "url": "<URL_SERVER>/journeybuilder/execute",
             "verb": "POST",
             "body": "",
             "header": "",
@@ -37,22 +37,22 @@
     "configurationArguments": {
         "applicationExtensionKey": "eef1dca0-80c5-4b49-a378-32af6531f0a3",
         "save": {
-            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/save",
+            "url": "<URL_SERVER>/journeybuilder/save",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/publish",
+            "url": "<URL_SERVER>/journeybuilder/publish",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/stop",
+            "url": "<URL_SERVER>/journeybuilder/stop",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "https://radiant-fortress-51852-2.herokuapp.com/journeybuilder/validate",
+            "url": "<URL_SERVER>/journeybuilder/validate",
             "verb": "POST",
             "useJwt": true
         }

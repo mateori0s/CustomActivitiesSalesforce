@@ -1,16 +1,14 @@
 "use strict";
-
-// Deps
-var activity = require("./activity");
+const activity = require("./activity");
 
 /*
  * GET home page.
  */
-exports.index = function(req, res) {
+exports.index = (req, res) => {
 	if (!req.session.token) {
 		res.render("index", {
 			title: "Unauthenticated",
-			errorMessage: "This app may only be loaded via Salesforce Marketing Cloud"
+			errorMessage: "This app may only be loaded via Salesforce Marketing Cloud."
 		});
 	} else {
 		res.render("index", {
@@ -20,11 +18,11 @@ exports.index = function(req, res) {
 	}
 };
 
-exports.login = function(req, res) {
+exports.login = (req, res) => {
 	console.log("req.body: ", req.body);
 	res.redirect("/");
 };
 
-exports.logout = function(req, res) {
+exports.logout = (req, res) => {
 	req.session.token = "";
 };

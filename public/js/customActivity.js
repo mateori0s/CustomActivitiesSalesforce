@@ -1,5 +1,6 @@
-define(['postmonger'], function (Postmonger) {
+define(['postmonger'], (Postmonger) => {
     'use strict';
+    // This function is called when 'postmonger.js' is loaded.
 
     let connection = new Postmonger.Session();
     let authTokens = {};
