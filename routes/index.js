@@ -1,5 +1,6 @@
 "use strict";
 const activity = require("./activity");
+const configJsonFile = require("../public/config.json");
 
 /*
  * GET home page.
@@ -25,4 +26,14 @@ exports.login = (req, res) => {
 
 exports.logout = (req, res) => {
 	req.session.token = "";
+};
+
+exports.configJson = async (req, res) => {
+	configJsonFile.configurationArguments.applicationExtensionKey = process.env.applicationExtensionKey;
+	configJsonFile.arguments.execute.url = `${process.env.thisServerBaseUrl}/journeybuilder/execute`;
+	configJsonFile.configurationArguments.save.url = `${process.env.thisServerBaseUrl}/journeybuilder/save`;
+	configJsonFile.configurationArguments.publish.url = `${process.env.thisServerBaseUrl}/journeybuilder/publish`;
+	configJsonFile.configurationArguments.stop.url = `${process.env.thisServerBaseUrl}/journeybuilder/stop`;
+	configJsonFile.configurationArguments.validate.url = `${process.env.thisServerBaseUrl}/journeybuilder/validate`;
+	res.json(configJsonFile);
 };
