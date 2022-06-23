@@ -48,6 +48,8 @@ define(['postmonger'], (Postmonger) => {
      */
     function save() {
         const messageValue = document.getElementById('messageText');
+        console.log('AAAAAAAAAAAAAAAAAAA');
+        console.log(JSON.stringify(payload));
         payload['arguments'].execute.inArguments = [
             { message: messageValue.value },
             { age: `{{Event.${eventDefinitionKey}.age}}` },
@@ -59,6 +61,8 @@ define(['postmonger'], (Postmonger) => {
             { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
         ];
         payload['metaData'].isConfigured = true;
+        console.log('BBBBBBBBBBBBBBBBBB');
+        console.log(JSON.stringify(payload));
         connection.trigger('updateActivity', payload);
     }
 

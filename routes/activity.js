@@ -2,6 +2,16 @@
 const util = require('util');
 const axios = require("axios");
 
+const JWT = (body, secret, cb) => {
+	if (!body) {
+		return cb(new Error('invalid jwtdata'));
+	}
+
+	require('jsonwebtoken').verify(body.toString('utf8'), secret, {
+		algorithm: 'HS256'
+	}, cb);
+};
+
 exports.logExecuteData = [];
 const logData = (req) => { // Log data from the request and put it in an array accessible to the main app.
     exports.logExecuteData.push({
@@ -55,6 +65,7 @@ exports.edit = (req, res) => {
  */
 exports.save = (req, res) => {
     logData(req);
+    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC');
     res.send(200, 'Save');
 };
 
