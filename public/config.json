@@ -8,8 +8,8 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro",
-            "description": "Servidor para las Custom Activities de CA CDP Claro.",
+            "name": "CA CDP Claro Packs",
+            "description": "Revisa si un número de celular puede o no comprar un pack.",
             "step1Label": "Configure Activity"
         }
     },
