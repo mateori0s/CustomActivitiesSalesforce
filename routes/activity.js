@@ -65,7 +65,6 @@ exports.edit = (req, res) => {
  */
 exports.save = (req, res) => {
     logData(req);
-    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC');
     res.send(200, 'Save');
 };
 
@@ -82,32 +81,45 @@ exports.execute = function (req, res) {
         }
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             console.log('##### decoded ####=>', decoded);
-            const { brokerSmsApiURL, brokerSecret, brokerUserKey, testPhone } = process.env;
-            await axios.post(
-                `${brokerSmsApiURL}/v1/cdpbroker-test/online_loader/notificacion/cargarnotificacionDn/sms/`,
+
+            const { claroTokensApiClientId, claroTokensApiClientSecret, claroTokensApiBaseUrl } = process.env;
+
+            const formParams = new URLSearchParams();
+            params.append('grant_type', 'client_credentials');
+            params.append('client_id', claroTokensApiClientId);
+            params.append('client_secret', claroTokensApiClientSecret);
+
+            const token = await axios.post(`${claroTokensApiBaseUrl}/protocol/openid-connect/token`, formParams)
+                .then(res => res.data.access_token)
+                .catch(err => console.log(err));
+
+            const { claroOffersApiUrl, claroOffersApiMsisdn, claroOffersApiProviderId, claroOffersApiSessionId } = process.env;
+
+            const { description, packs } = await axios.post(
+                claroOffersApiUrl,
                 {
-                    bill_number: testPhone,
-                    mensaje: "Prueba CA CDP Claro",
-                    subject: "[Cobertura] ",
-                    urgente: 1,
-                    validar: 0
+                    msisdn: claroOffersApiMsisdn,
+                    providerId: claroOffersApiProviderId
                 },
                 {
                     headers: {
-                        Authorization: `Basic ${brokerSecret}`,
-                        user_key: brokerUserKey
+                        'Session-Id': claroOffersApiSessionId,
+                        Country: 'AR',
+                        Authorization: `Bearer ${token}`
                     }
                 }
-            )
+             )
                 .then((res) => {
-                    console.log('Response:');
-                    console.log(res.data);
+                   console.log('Response:');
+                   console.log(res.data);
+                   return res.data;
                 })
                 .catch((error) => {
-                    console.log('Error:');
-                    console.log(error);
+                   console.log('Error:');
+                   console.log(error);
                 });
-            res.send(200, 'Execute');
+
+            res.send(200, { phoneNumberCanBuyAPack: (description === 'Operacion exitosa' && packs.length) ? true : false });
         } else {
             console.error('inArguments invalid.');
             return res.status(400).end();
