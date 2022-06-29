@@ -101,7 +101,7 @@
                             "direction": "in"
                         },
                         "phone": {
-                            "dataType": "Number",
+                            "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         },
