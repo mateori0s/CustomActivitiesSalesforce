@@ -130,7 +130,7 @@ exports.execute = function (req, res) {
                     const { response: { status, data } } = error;
                     console.log('Error:');
                     console.log(`Status: ${status}`);
-                    console.log(`Data: ${data}`);
+                    console.log(`Data: ${JSON.stringify(data)}`);
                     packsValidationFailed = true;
                     packsValidationError = JSON.stringify({ status, data });
                 });
