@@ -93,19 +93,19 @@ exports.execute = function (req, res) {
                 .then(res => res.data.access_token)
                 .catch(err => console.log(err));
 
-            const { claroOffersApiUrl, claroOffersApiMsisdn, claroOffersApiSessionId } = process.env;
+            const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
             let providerId = '';
+            let phone = '';
             for (const argument of decoded.inArguments) {
-                if (argument.providerId) {
-                    providerId = argument.providerId;
-                    break;
-                }
+                if (argument.providerId) providerId = argument.providerId;
+                else if (argument.phone) phone = argument.phone;
+                if (providerId && phone) break;
             }
 
             const { description, packs } = await axios.post(
                 claroOffersApiUrl,
                 {
-                    msisdn: claroOffersApiMsisdn,
+                    msisdn: phone,
                     providerId
                 },
                 {
