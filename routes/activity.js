@@ -85,21 +85,22 @@ exports.execute = function (req, res) {
             const { claroTokensApiClientId, claroTokensApiClientSecret, claroTokensApiBaseUrl } = process.env;
 
             const formParams = new URLSearchParams();
-            params.append('grant_type', 'client_credentials');
-            params.append('client_id', claroTokensApiClientId);
-            params.append('client_secret', claroTokensApiClientSecret);
+            formParams.append('grant_type', 'client_credentials');
+            formParams.append('client_id', claroTokensApiClientId);
+            formParams.append('client_secret', claroTokensApiClientSecret);
 
             const token = await axios.post(`${claroTokensApiBaseUrl}/protocol/openid-connect/token`, formParams)
                 .then(res => res.data.access_token)
                 .catch(err => console.log(err));
 
-            const { claroOffersApiUrl, claroOffersApiMsisdn, claroOffersApiProviderId, claroOffersApiSessionId } = process.env;
+            const { claroOffersApiUrl, claroOffersApiMsisdn, claroOffersApiSessionId } = process.env;
+            const { providerId } = decoded;
 
             const { description, packs } = await axios.post(
                 claroOffersApiUrl,
                 {
                     msisdn: claroOffersApiMsisdn,
-                    providerId: claroOffersApiProviderId
+                    providerId
                 },
                 {
                     headers: {
