@@ -47,11 +47,9 @@ define(['postmonger'], (Postmonger) => {
      * The config.json will be updated here if there are any updates to be done via Front End UI
      */
     function save() {
-        const messageValue = document.getElementById('messageText');
-        console.log('AAAAAAAAAAAAAAAAAAA');
-        console.log(JSON.stringify(payload));
+        const providerIdElement = document.getElementById('providerId');
         payload['arguments'].execute.inArguments = [
-            { message: messageValue.value },
+            { providerId: providerIdElement.value },
             { age: `{{Event.${eventDefinitionKey}.age}}` },
             { email: `{{Event.${eventDefinitionKey}.email}}` },
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
@@ -61,8 +59,6 @@ define(['postmonger'], (Postmonger) => {
             { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
         ];
         payload['metaData'].isConfigured = true;
-        console.log('BBBBBBBBBBBBBBBBBB');
-        console.log(JSON.stringify(payload));
         connection.trigger('updateActivity', payload);
     }
 
@@ -85,12 +81,12 @@ define(['postmonger'], (Postmonger) => {
 
         const inArguments = hasInArguments ? data.arguments.execute.inArguments : [];
         
-        const messageTextArg = inArguments.find((arg) => arg.message);
+        const providerIdArg = inArguments.find((arg) => arg.message);
 
-        console.log('Message Argument', messageTextArg);
+        console.log('Message Argument', providerIdArg);
 
-        if (messageTextArg) {
-            document.getElementById('messageText').value = messageTextArg.message;
+        if (providerIdArg) {
+            document.getElementById('providerId').value = providerIdArg.message;
         }
     };
 
