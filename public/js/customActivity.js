@@ -81,12 +81,12 @@ define(['postmonger'], (Postmonger) => {
 
         const inArguments = hasInArguments ? data.arguments.execute.inArguments : [];
         
-        const providerIdArg = inArguments.find((arg) => arg.message);
+        const providerIdArg = inArguments.find((arg) => arg.providerId);
 
         console.log('Message Argument', providerIdArg);
 
         if (providerIdArg) {
-            document.getElementById('providerId').value = providerIdArg.message;
+            document.getElementById('providerId').value = providerIdArg.providerId;
         }
     };
 
