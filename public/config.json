@@ -117,6 +117,16 @@
                         "dataType": "Boolean",
                         "direction": "out",
                         "access": "visible"
+                    },
+                    "packsValidationFailed": {
+                        "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "packsValidationError": {
+                        "dataType": "Text",
+                        "direction": "out",
+                        "access": "visible"
                     }
                 }]
             }

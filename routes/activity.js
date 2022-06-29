@@ -102,7 +102,12 @@ exports.execute = function (req, res) {
                 if (providerId && phone) break;
             }
 
-            const { description, packs } = await axios.post(
+            console.log('Getting packs data...');
+            console.log('Body:');
+            console.log(JSON.stringify({ msisdn: phone, providerId }));
+            let packsValidationFailed = false;
+            let packsValidationError = null;
+            const packsValidationResponse = await axios.post(
                 claroOffersApiUrl,
                 {
                     msisdn: phone,
@@ -117,16 +122,24 @@ exports.execute = function (req, res) {
                 }
              )
                 .then((res) => {
-                   console.log('Response:');
-                   console.log(res.data);
-                   return res.data;
+                    console.log('Response:');
+                    console.log(res.data);
+                    return res.data;
                 })
                 .catch((error) => {
-                   console.log('Error:');
-                   console.log(error);
+                    const { response: { status, data } } = error;
+                    console.log('Error:');
+                    console.log(`Status: ${status}`);
+                    console.log(`Data: ${data}`);
+                    packsValidationFailed = true;
+                    packsValidationError = JSON.stringify({ status, data });
                 });
 
-            res.send(200, { phoneNumberCanBuyAPack: (description === 'Operacion exitosa' && packs.length) ? true : false });
+            res.send(200, {
+                phoneNumberCanBuyAPack: packsValidationFailed ? null : ((packsValidationResponse.description === 'Operacion exitosa' && packsValidationResponse.packs.length) ? true : false),
+                packsValidationFailed,
+                packsValidationError 
+            });
         } else {
             console.error('inArguments invalid.');
             return res.status(400).end();
