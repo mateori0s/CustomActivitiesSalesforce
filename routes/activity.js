@@ -94,7 +94,13 @@ exports.execute = function (req, res) {
                 .catch(err => console.log(err));
 
             const { claroOffersApiUrl, claroOffersApiMsisdn, claroOffersApiSessionId } = process.env;
-            const { providerId } = decoded;
+            let providerId = '';
+            for (const argument of decoded.inArguments) {
+                if (argument.providerId) {
+                    providerId = argument.providerId;
+                    break;
+                }
+            }
 
             const { description, packs } = await axios.post(
                 claroOffersApiUrl,
