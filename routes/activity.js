@@ -84,10 +84,10 @@ exports.execute = function (req, res) {
             const { brokerSmsApiURL, brokerSecret, brokerUserKey } = process.env;
             const requestBody = {};
             for (const argument of decoded.inArguments) {
-                if (argument.providerId) requestBody.mensaje = argument.messageText;
+                if (argument.messageText) requestBody.mensaje = argument.messageText;
                 else if (argument.phone) requestBody.bill_number = argument.phone;
                 else if (argument.subject) requestBody.subject = `[${argument.subject}] `;
-                else if (argument.urgente) {
+                else if (argument.urgente !== undefined) {
                     switch (argument.urgente) {
                         case true:
                             requestBody.urgente = 1;
@@ -99,7 +99,7 @@ exports.execute = function (req, res) {
                             break;
                     }
                 }
-                else if (argument.validar) {
+                else if (argument.validar !== undefined) {
                     switch (argument.validar) {
                         case true:
                             requestBody.validar = 1;
