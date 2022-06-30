@@ -3,19 +3,23 @@
     "metaData": {
         "icon": "images/icon.png",
         "iconSmall": "images/iconSmall.png",
-        "category": "message"
+        "category": "custom"
     },
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro",
-            "description": "Servidor para las Custom Activities de CA CDP Claro.",
+            "name": "CA CDP Claro Broker",
+            "description": "Envía un mensaje a un número de celular.",
             "step1Label": "Configure Activity"
         }
     },
     "arguments": {
         "execute": {
             "inArguments": [
+                { "messageText": "" },
+                { "subject": "" },
+                { "urgente": "" },
+                { "validar": "" },
                 { "age": "" },
                 { "email": "" },
                 { "firstname": "" },
@@ -59,8 +63,8 @@
     },
     "userInterfaces": {
         "configModal": {
-            "height": 700,
-            "width": 1000,
+            "height": 350,
+            "width": 500,
             "fullscreen": false
         }
     },
@@ -69,6 +73,26 @@
             "execute": {
                 "inArguments": [
                     {
+                        "messageText": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "subject": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "urgente": {
+                            "dataType": "Boolean",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "validar": {
+                            "dataType": "Boolean",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
                         "age": {
                             "dataType": "Number",
                             "isNullable": false,
@@ -106,7 +130,23 @@
                         }
                     }
                 ],
-                "outArguments": []
+                "outArguments": [{
+                    "messageWasSent": {
+                        "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "messageSendingFailed": {
+                        "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "messageSendingError": {
+                        "dataType": "Text",
+                        "direction": "out",
+                        "access": "visible"
+                    }
+                }]
             }
         }
     }

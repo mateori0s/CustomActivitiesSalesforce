@@ -65,7 +65,6 @@ exports.edit = (req, res) => {
  */
 exports.save = (req, res) => {
     logData(req);
-    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC');
     res.send(200, 'Save');
 };
 
@@ -82,16 +81,52 @@ exports.execute = function (req, res) {
         }
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             console.log('##### decoded ####=>', decoded);
-            const { brokerSmsApiURL, brokerSecret, brokerUserKey, testPhone } = process.env;
-            await axios.post(
+            const { brokerSmsApiURL, brokerSecret, brokerUserKey } = process.env;
+            const requestBody = {};
+            for (const argument of decoded.inArguments) {
+                if (argument.providerId) requestBody.mensaje = argument.messageText;
+                else if (argument.phone) requestBody.bill_number = argument.phone;
+                else if (argument.subject) requestBody.subject = `[${argument.subject}] `;
+                else if (argument.urgente) {
+                    switch (argument.urgente) {
+                        case true:
+                            requestBody.urgente = 1;
+                            break;
+                        case false:
+                            requestBody.urgente = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (argument.validar) {
+                    switch (argument.validar) {
+                        case true:
+                            requestBody.validar = 1;
+                            break;
+                        case false:
+                            requestBody.validar = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (
+                    requestBody.bill_number &&
+                    requestBody.mensaje &&
+                    requestBody.subject &&
+                    requestBody.urgente !== undefined &&
+                    requestBody.validar !== undefined
+                ) break;
+            }
+
+            console.log('Sending message...\nBody:');
+            console.log(JSON.stringify(requestBody));
+            let messageSendingFailed = false;
+            let messageSendingError = null;
+            const messageSendingResponse = await axios.post(
                 `${brokerSmsApiURL}/v1/cdpbroker-test/online_loader/notificacion/cargarnotificacionDn/sms/`,
-                {
-                    bill_number: testPhone,
-                    mensaje: "Prueba CA CDP Claro",
-                    subject: "[Cobertura] ",
-                    urgente: 1,
-                    validar: 0
-                },
+                requestBody,
                 {
                     headers: {
                         Authorization: `Basic ${brokerSecret}`,
@@ -102,12 +137,21 @@ exports.execute = function (req, res) {
                 .then((res) => {
                     console.log('Response:');
                     console.log(res.data);
+                    return res.data;
                 })
                 .catch((error) => {
+                    const { response: { status, data } } = error;
                     console.log('Error:');
-                    console.log(error);
+                    console.log(`Status: ${status}`);
+                    console.log(`Data: ${JSON.stringify(data)}`);
+                    messageSendingFailed = true;
+                    messageSendingError = JSON.stringify({ status, data });
                 });
-            res.send(200, 'Execute');
+            res.send(200, {
+                phoneNumberCanBuyAPack: messageSendingFailed ? null : (messageSendingResponse ? true : false),
+                messageSendingFailed,
+                messageSendingError 
+            });
         } else {
             console.error('inArguments invalid.');
             return res.status(400).end();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CA CDP Claro</title>
+        <title>CA CDP Claro Broker</title>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie-edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,17 +26,30 @@
     </head>
     <body>
         <div class="main-block">
-            <h1>CA CDP Claro</h1>
-            <form action="/">
-                <hr>
+            <h1>CA CDP Claro Broker</h1>
+            <span class="description-span">Envía un mensaje a un número de celular.</span>
+            <form class="main-form" action="/">
+                <span class="text-input-span">Mensaje:</span>
                 <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
-                <input type="text" name="messageText" id="messageText" placeholder="Mensaje" required/>
-                <button type="button" id="btnDone" name="btnDone">
-                    ¡Listo!
-                </button>
-                <hr>
-                <div class="btn-block">
-                    <p>CA CDP Claro</p>
+                <input type="text" name="messageText" id="messageText" placeholder="Mensaje" required class="text-input"/>
+                <span class="text-input-span">Asunto:</span>
+                <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
+                <input type="text" name="subject" id="subject" placeholder="Asunto" required class="text-input"/>
+                <div class="boolean-input-container">
+                    <span class="input-span">Urgente:</span>
+                    <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
+                    <input type="radio" id="urgente-true" name="urgente" value="true">
+                    <label for="urgente-true">Si</label>
+                    <input type="radio" id="urgente-false" name="urgente" value="false">
+                    <label for="urgente-false">No</label>
+                </div>
+                <div class="boolean-input-container">
+                    <span class="input-span">Validar:</span>
+                    <label id="icon" for="validar"><i class="fa-solid fa-comment-sms"></i></label>
+                    <input type="radio" id="validar-true" name="validar" value="true">
+                    <label for="validar-true">Si</label>
+                    <input type="radio" id="validar-false" name="validar" value="false">
+                    <label for="validar-false">No</label>
                 </div>
             </form>
         </div>

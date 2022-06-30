@@ -47,11 +47,19 @@ define(['postmonger'], (Postmonger) => {
      * The config.json will be updated here if there are any updates to be done via Front End UI
      */
     function save() {
-        const messageValue = document.getElementById('messageText');
-        console.log('AAAAAAAAAAAAAAAAAAA');
-        console.log(JSON.stringify(payload));
+        let urgente = null;
+        if (document.getElementById('urgente-true').checked) urgente = true;
+        if (document.getElementById('urgente-false').checked) urgente = false;
+
+        let validar = null;
+        if (document.getElementById('validar-true').checked) validar = true;
+        if (document.getElementById('validar-false').checked) validar = false;
+
         payload['arguments'].execute.inArguments = [
-            { message: messageValue.value },
+            { messageText: document.getElementById('messageText').value },
+            { subject: document.getElementById('subject').value },
+            { urgente },
+            { validar },
             { age: `{{Event.${eventDefinitionKey}.age}}` },
             { email: `{{Event.${eventDefinitionKey}.email}}` },
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
@@ -61,8 +69,6 @@ define(['postmonger'], (Postmonger) => {
             { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
         ];
         payload['metaData'].isConfigured = true;
-        console.log('BBBBBBBBBBBBBBBBBB');
-        console.log(JSON.stringify(payload));
         connection.trigger('updateActivity', payload);
     }
 
@@ -76,21 +82,31 @@ define(['postmonger'], (Postmonger) => {
      * e.g. input fields, select lists
      */
     function initialLoad(data) {
-        const hasInArguments = Boolean(
+        const inArguments = Boolean(
             data.arguments &&
             data.arguments.execute &&
             data.arguments.execute.inArguments &&
             data.arguments.execute.inArguments.length > 0
-        );
-
-        const inArguments = hasInArguments ? data.arguments.execute.inArguments : [];
+        ) ? data.arguments.execute.inArguments : [];
         
-        const messageTextArg = inArguments.find((arg) => arg.message);
+        const messageTextArg = inArguments.find(arg => arg.messageText);
+        if (messageTextArg) document.getElementById('messageText').value = messageTextArg.messageText;
 
-        console.log('Message Argument', messageTextArg);
+        const subjectArg = inArguments.find(arg => arg.subject);
+        if (subjectArg) document.getElementById('subject').value = subjectArg.subject;
 
-        if (messageTextArg) {
-            document.getElementById('messageText').value = messageTextArg.message;
+        const urgenteArg = inArguments.find(arg => arg.urgente);
+        if (urgenteArg) {
+            let idSuffix = 'false';
+            if (urgenteArg.urgente === true) idSuffix = 'true';
+            document.getElementById(`urgente-${idSuffix}`).checked = true;
+        }
+
+        const validarArg = inArguments.find(arg => arg.validar);
+        if (validarArg) {
+            let idSuffix = 'false';
+            if (validarArg.validar === true) idSuffix = 'true';
+            document.getElementById(`validar-${idSuffix}`).checked = true;
         }
     };
 
