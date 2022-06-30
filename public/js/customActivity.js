@@ -104,6 +104,9 @@ define(['postmonger'], (Postmonger) => {
                 document.getElementById('urgente-true').checked = false;
                 document.getElementById('urgente-false').checked = true;
             }
+        } else {
+            document.getElementById('urgente-true').checked = false;
+            document.getElementById('urgente-false').checked = true;
         }
 
         const validarArg = inArguments.find(arg => arg.validar);
@@ -115,6 +118,9 @@ define(['postmonger'], (Postmonger) => {
                 document.getElementById('validar-true').checked = false;
                 document.getElementById('validar-false').checked = true;
             }
+        } else {
+            document.getElementById('validar-true').checked = false;
+            document.getElementById('validar-false').checked = true;
         }
     };
 
