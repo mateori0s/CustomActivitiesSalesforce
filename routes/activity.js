@@ -148,7 +148,7 @@ exports.execute = function (req, res) {
                     messageSendingError = JSON.stringify({ status, data });
                 });
             res.send(200, {
-                phoneNumberCanBuyAPack: messageSendingFailed ? null : (messageSendingResponse ? true : false),
+                messageWasSent: messageSendingFailed ? false : (messageSendingResponse ? true : false),
                 messageSendingFailed,
                 messageSendingError 
             });

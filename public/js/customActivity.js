@@ -96,32 +96,12 @@ define(['postmonger'], (Postmonger) => {
         if (subjectArg) document.getElementById('subject').value = subjectArg.subject;
 
         const urgenteArg = inArguments.find(arg => arg.urgente);
-        if (urgenteArg) {
-            if (urgenteArg.urgente === true) {
-                document.getElementById('urgente-true').checked = true;
-                document.getElementById('urgente-false').checked = false;
-            } else {
-                document.getElementById('urgente-true').checked = false;
-                document.getElementById('urgente-false').checked = true;
-            }
-        } else {
-            document.getElementById('urgente-true').checked = false;
-            document.getElementById('urgente-false').checked = true;
-        }
+        let urgenteIdSuffix = (urgenteArg && urgenteArg.urgente === true) ? 'true' : 'false';
+        document.getElementById(`urgente-${urgenteIdSuffix}`).checked = true;
 
         const validarArg = inArguments.find(arg => arg.validar);
-        if (validarArg) {
-            if (validarArg.validar === true) {
-                document.getElementById('validar-true').checked = true;
-                document.getElementById('validar-false').checked = false;
-            } else {
-                document.getElementById('validar-true').checked = false;
-                document.getElementById('validar-false').checked = true;
-            }
-        } else {
-            document.getElementById('validar-true').checked = false;
-            document.getElementById('validar-false').checked = true;
-        }
+        let validarIdSuffix = (validarArg && validarArg.urgente === true) ? 'true' : 'false';
+        document.getElementById(`validar-${validarIdSuffix}`).checked = true;
     };
 
 
