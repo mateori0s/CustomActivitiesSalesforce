@@ -136,7 +136,7 @@ exports.execute = function (req, res) {
                 });
 
             res.send(200, {
-                phoneNumberCanBuyAPack: packsValidationFailed ? null : ((packsValidationResponse.description === 'Operacion exitosa' && packsValidationResponse.packs.length) ? true : false),
+                phoneNumberCanBuyAPack: packsValidationFailed ? false : ((packsValidationResponse.description === 'Operacion exitosa' && packsValidationResponse.packs.length) ? true : false),
                 packsValidationFailed,
                 packsValidationError 
             });
