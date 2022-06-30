@@ -97,16 +97,24 @@ define(['postmonger'], (Postmonger) => {
 
         const urgenteArg = inArguments.find(arg => arg.urgente);
         if (urgenteArg) {
-            let idSuffix = 'false';
-            if (urgenteArg.urgente === true) idSuffix = 'true';
-            document.getElementById(`urgente-${idSuffix}`).checked = true;
+            if (urgenteArg.urgente === true) {
+                document.getElementById('urgente-true').checked = true;
+                document.getElementById('urgente-false').checked = false;
+            } else {
+                document.getElementById('urgente-true').checked = false;
+                document.getElementById('urgente-false').checked = true;
+            }
         }
 
         const validarArg = inArguments.find(arg => arg.validar);
         if (validarArg) {
-            let idSuffix = 'false';
-            if (validarArg.validar === true) idSuffix = 'true';
-            document.getElementById(`validar-${idSuffix}`).checked = true;
+            if (validarArg.validar === true) {
+                document.getElementById('validar-true').checked = true;
+                document.getElementById('validar-false').checked = false;
+            } else {
+                document.getElementById('validar-true').checked = false;
+                document.getElementById('validar-false').checked = true;
+            }
         }
     };
 
