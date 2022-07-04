@@ -182,23 +182,3 @@ exports.stop = (req, res) => {
     logData(req);
     res.send(200, 'Stop');
 };
-
-/**
- * This function relies on the environment variables being set.
- * 
- * This function invokes the enhanced package authentication.
- * This would return an access token that can be used to call additional Marketing Cloud APIs.
- * 
- */
-const retrieveToken = () => {
-    axios.post(
-        `${process.env.authenticationUrl}/v2/token`,
-        {
-            grant_type: 'client_credentials',
-            client_id: process.env.clientId,
-            client_secret: process.env.clientSecret
-        }
-    )
-        .then(response => response.data['access_token'])
-        .catch(error => error);
-};
