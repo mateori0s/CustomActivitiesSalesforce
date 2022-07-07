@@ -77,17 +77,6 @@ exports.execute = function (req, res) {
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             console.log('##### decoded ####=>', decoded);
 
-            const { claroTokensApiClientId, claroTokensApiClientSecret, claroTokensApiBaseUrl } = process.env;
-
-            const formParams = new URLSearchParams();
-            formParams.append('grant_type', 'client_credentials');
-            formParams.append('client_id', claroTokensApiClientId);
-            formParams.append('client_secret', claroTokensApiClientSecret);
-
-            const token = await axios.post(`${claroTokensApiBaseUrl}/protocol/openid-connect/token`, formParams)
-                .then(res => res.data.access_token)
-                .catch(err => console.log(err));
-
             const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
             let providerId = '';
             let phone = '';
@@ -105,17 +94,16 @@ exports.execute = function (req, res) {
             const packsValidationResponse = await axios.post(
                 claroOffersApiUrl,
                 {
-                    msisdn: phone,
-                    providerId
+                    billNumber: Number(phone),
+                    channel: "PDC"
                 },
                 {
                     headers: {
-                        'Session-Id': claroOffersApiSessionId,
                         Country: 'AR',
-                        Authorization: `Bearer ${token}`
+                        'Session-Id': claroOffersApiSessionId
                     }
                 }
-             )
+            )
                 .then((res) => {
                     console.log('Response:');
                     console.log(res.data);
@@ -131,7 +119,7 @@ exports.execute = function (req, res) {
                 });
 
             res.send(200, {
-                phoneNumberCanBuyAPack: packsValidationFailed ? false : ((packsValidationResponse.description === 'Operacion exitosa' && packsValidationResponse.packs.length) ? true : false),
+                phoneNumberCanBuyAPack: packsValidationFailed ? false : ((packsValidationResponse.canBePurchased === true && packsValidationResponse.packId) ? true : false),
                 packsValidationFailed,
                 packsValidationError 
             });
