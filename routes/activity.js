@@ -109,14 +109,10 @@ exports.execute = function (req, res) {
                     return res.data;
                 })
                 .catch((error) => {
-                    // const { response: { status, data } } = error;
                     console.log('Error:');
-                    /* console.log(`Status: ${status}`);
-                    console.log(`Data: ${JSON.stringify(data)}`); */
                     console.log(error);
                     console.log(JSON.stringify(error));
                     packsValidationFailed = true;
-                    // packsValidationError = JSON.stringify({ status, data });
                     packsValidationError = JSON.stringify(error);
                 });
 
