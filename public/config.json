@@ -8,7 +8,7 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro Broker",
+            "name": "CA CDP Claro Broker - Heroku",
             "description": "Envía un mensaje a un número de celular.",
             "step1Label": "Configure Activity"
         }
