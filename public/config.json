@@ -8,15 +8,14 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro Packs - Heroku",
-            "description": "Revisa si un número de celular puede o no comprar un pack.",
+            "name": "CA CDP Claro Saldo - Heroku",
+            "description": "Revisa el saldo de una linea.",
             "step1Label": "Configure Activity"
         }
     },
     "arguments": {
         "execute": {
             "inArguments": [
-                { "providerId": "" },
                 { "age": "" },
                 { "email": "" },
                 { "firstname": "" },
@@ -70,11 +69,6 @@
             "execute": {
                 "inArguments": [
                     {
-                        "providerId": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
                         "age": {
                             "dataType": "Number",
                             "isNullable": false,
@@ -113,18 +107,13 @@
                     }
                 ],
                 "outArguments": [{
-                    "phoneNumberCanBuyAPack": {
-                        "dataType": "Boolean",
+                    "accountBalance": {
+                        "dataType": "Decimal",
                         "direction": "out",
                         "access": "visible"
                     },
-                    "packsValidationFailed": {
+                    "balanceValidationFailed": {
                         "dataType": "Boolean",
-                        "direction": "out",
-                        "access": "visible"
-                    },
-                    "packsValidationError": {
-                        "dataType": "Text",
                         "direction": "out",
                         "access": "visible"
                     }

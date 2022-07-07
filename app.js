@@ -9,6 +9,11 @@ const activity = require('./routes/activity');
 
 const app = express();
 
+app.locals.token = {
+  value: null,
+  expiresAt: null,
+};
+
 // Configure Express
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.raw({type: 'application/jwt'}));

@@ -1,6 +1,7 @@
 'use strict';
 const util = require('util');
 const axios = require("axios");
+const https = require("https");
 
 const JWT = (body, secret, cb) => {
 	if (!body) return cb(new Error('invalid jwtdata'));
@@ -69,7 +70,6 @@ exports.save = (req, res) => {
 exports.execute = function (req, res) {
     console.log(JSON.stringify(req.headers));
     JWT(req.body, process.env.jwtSecret, async (err, decoded) => {
-        // verification error -> unauthorized request
         if (err) {
             console.error(err);
             return res.status(401).end();
@@ -77,49 +77,92 @@ exports.execute = function (req, res) {
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             console.log('##### decoded ####=>', decoded);
 
-            const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
-            let phone = '';
-            for (const argument of decoded.inArguments) {
-                if (argument.phone) {
-                    phone = argument.phone;
-                    break;
-                }
-            }
+            const { value, expiredAt } = req.app.locals.token;
 
-            console.log('Getting packs data...');
-            console.log('Body:');
-            let packsValidationFailed = false;
-            let packsValidationError = null;
-            const packsValidationResponse = await axios.post(
-                claroOffersApiUrl,
-                {
-                    billNumber: Number(phone),
-                    channel: "PDC"
-                },
-                {
-                    headers: {
-                        Country: 'AR',
-                        'Session-Id': claroOffersApiSessionId
+            const now = new Date();
+
+            let token = '';
+            let accountBalance = 0.0;
+            let balanceValidationFailed = false;
+
+            if (value === null || expiredAt < now) {
+                const { tokenApiUrl, tokenApiUsername, tokenApiPassword } = process.env;
+
+                console.log('Getting token...');
+                token = await axios.post(
+                    tokenApiUrl,
+                    {
+                        username: tokenApiUsername,
+                        password: tokenApiPassword
+                    }
+                )
+                    .then((res) => {
+                        console.log('Token obtained.');
+                        if (res.headers.authorization) return res.headers.authorization.substring(7);
+                    })
+                    .catch((err) => {
+                        console.log('Error:');
+                        console.log(err);
+                        console.log(JSON.stringify(err));
+                    });
+                if (!token) balanceValidationFailed = true;
+                else {
+                    req.app.locals.token = {
+                        value: token,
+                        expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 23),
+                    };
+                }
+            } else token = value;
+
+            if (!balanceValidationFailed) {
+                const {
+                    balancesApiUrl,
+                    balancesApiSessionId,
+                    balancesApiChannel,
+                    balancesApiService
+                } = process.env;
+    
+                let phone = '';
+                for (const argument of decoded.inArguments) {
+                    if (argument.phone) {
+                        phone = argument.phone;
+                        break;
                     }
                 }
-            )
-                .then((res) => {
-                    console.log('Response:');
-                    console.log(res.data);
-                    return res.data;
-                })
-                .catch((error) => {
-                    console.log('Error:');
-                    console.log(error);
-                    console.log(JSON.stringify(error));
-                    packsValidationFailed = true;
-                    packsValidationError = JSON.stringify(error);
-                });
+    
+                console.log('Getting balance data...');
+                const saldoBalancesApiResponse = await axios.get(
+                    balancesApiUrl,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Session-Id': balancesApiSessionId,
+                            Channel: balancesApiChannel,
+                            Service: balancesApiService,
+                            SubId: `549${phone}`,
+                        },
+                        httpsAgent: new https.Agent({  
+                            rejectUnauthorized: false
+                        }),
+                    }
+                )
+                    .then((res) => {
+                        console.log('Response');
+                        console.log(res.data);
+                        return res.data;
+                    })
+                    .catch((err) => {
+                        console.log('Error:');
+                        console.log(err);
+                        console.log(JSON.stringify(err));
+                    });
+                if (!saldoBalancesApiResponse) balanceValidationFailed = true;
+                else accountBalance = saldoBalancesApiResponse.balancesDetails.accountBalance;
+            }
 
             res.send(200, {
-                phoneNumberCanBuyAPack: packsValidationFailed ? false : ((packsValidationResponse.canBePurchased === true && packsValidationResponse.packId) ? true : false),
-                packsValidationFailed,
-                packsValidationError 
+                accountBalance,
+                balanceValidationFailed,
             });
         } else {
             console.error('inArguments invalid.');
@@ -150,24 +193,4 @@ exports.validate = (req, res) => {
 exports.stop = (req, res) => {
     logData(req);
     res.send(200, 'Stop');
-};
-
-/**
- * This function relies on the environment variables being set.
- * 
- * This function invokes the enhanced package authentication.
- * This would return an access token that can be used to call additional Marketing Cloud APIs.
- * 
- */
-const retrieveToken = () => {
-    axios.post(
-        `${process.env.authenticationUrl}/v2/token`,
-        {
-            grant_type: 'client_credentials',
-            client_id: process.env.clientId,
-            client_secret: process.env.clientSecret
-        }
-    )
-        .then(response => response.data['access_token'])
-        .catch(error => error);
 };
