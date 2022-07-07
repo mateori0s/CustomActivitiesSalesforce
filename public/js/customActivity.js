@@ -47,9 +47,7 @@ define(['postmonger'], (Postmonger) => {
      * The config.json will be updated here if there are any updates to be done via Front End UI
      */
     function save() {
-        const providerIdElement = document.getElementById('providerId');
         payload['arguments'].execute.inArguments = [
-            { providerId: providerIdElement.value },
             { age: `{{Event.${eventDefinitionKey}.age}}` },
             { email: `{{Event.${eventDefinitionKey}.email}}` },
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
@@ -80,14 +78,8 @@ define(['postmonger'], (Postmonger) => {
         );
 
         const inArguments = hasInArguments ? data.arguments.execute.inArguments : [];
-        
-        const providerIdArg = inArguments.find((arg) => arg.providerId);
 
-        console.log('Message Argument', providerIdArg);
-
-        if (providerIdArg) {
-            document.getElementById('providerId').value = providerIdArg.providerId;
-        }
+        console.log('Message Argument', inArguments);
     };
 
 

@@ -78,17 +78,16 @@ exports.execute = function (req, res) {
             console.log('##### decoded ####=>', decoded);
 
             const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
-            let providerId = '';
             let phone = '';
             for (const argument of decoded.inArguments) {
-                if (argument.providerId) providerId = argument.providerId;
-                else if (argument.phone) phone = argument.phone;
-                if (providerId && phone) break;
+                if (argument.phone) {
+                    phone = argument.phone;
+                    break;
+                }
             }
 
             console.log('Getting packs data...');
             console.log('Body:');
-            console.log(JSON.stringify({ msisdn: phone, providerId }));
             let packsValidationFailed = false;
             let packsValidationError = null;
             const packsValidationResponse = await axios.post(
