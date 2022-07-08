@@ -140,11 +140,6 @@
                         "dataType": "Boolean",
                         "direction": "out",
                         "access": "visible"
-                    },
-                    "messageSendingError": {
-                        "dataType": "Text",
-                        "direction": "out",
-                        "access": "visible"
                     }
                 }]
             }
