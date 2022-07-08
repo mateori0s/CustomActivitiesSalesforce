@@ -1,22 +1,15 @@
 define(['postmonger'], (Postmonger) => {
     'use strict';
-    // This function is called when 'postmonger.js' is loaded.
 
     let connection = new Postmonger.Session();
-    let authTokens = {};
     let payload = {};
-
-    // Configuration variables
-    // let eventSchema = ''; // variable is used in parseEventSchema()
-    // let lastnameSchema = ''; // variable is used in parseEventSchema()
     let eventDefinitionKey;
 
     $(window).ready(onRender);
     connection.on('initActivity', initialize);
-    connection.on('clickedNext', save); // Save function within MC
+    connection.on('clickedNext', save);
 
     function onRender() {
-        // JB will respond the first time 'ready' is called with 'initActivity'
         connection.trigger('ready');
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
