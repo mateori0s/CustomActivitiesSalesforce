@@ -81,45 +81,4 @@ define(['postmonger'], (Postmonger) => {
 
         console.log('Message Argument', inArguments);
     };
-
-
-    /**
-     * This function is to pull the relevant information to create the schema of the objects
-     * 
-     * This function pulls out the schema for additional customizations that can be used.
-     * This function leverages on the required field of "Last Name" to pull out the overall event schema
-     * 
-     * returned variables of: lastnameSchema , eventSchema.
-     * eventSchema = Case:Contact:
-     * lastnameSchema = Case:Contact:<last_name_schema>
-     * 
-     * View the developer console in chrome upon opening of application in MC Journey Builder for further clarity.
-     */
-    function parseEventSchema() {
-        // Pulling data from the schema
-        connection.trigger('requestSchema');
-        connection.on('requestedSchema', function (data) {
-            // save schema
-            let dataJson = data['schema'];
-
-            for (let i = 0; i < dataJson.length; i++) {
-
-                // Last name schema and creation of event schema
-                // Last name is a required field in SF so this is used to pull the event schema
-                if (dataJson[i].key.toLowerCase().replace(/ /g, '').indexOf("lastname") !== -1) {
-                    let splitArr = dataJson[i].key.split(".");
-                    lastnameSchema = splitArr[splitArr.length - 1];
-                    console.log('Last Name Schema >>', lastnameSchema);
-
-                    let splitName = lastnameSchema.split(":");
-                    let reg = new RegExp(splitName[splitName.length - 1], "g");
-                    let oldSchema = splitArr[splitArr.length - 1];
-
-                    eventSchema = oldSchema.replace(reg, "");
-                    console.log("Event Schema >>", eventSchema);
-                }
-            }
-
-        });
-    }
 });
