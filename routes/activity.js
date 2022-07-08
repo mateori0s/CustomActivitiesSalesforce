@@ -48,7 +48,7 @@ const JWT = (body, secret, cb) => {
 	require('jsonwebtoken').verify(body.toString('utf8'), secret, { algorithm: 'HS256' }, cb);
 };
 
-exports.execute = function (req, res) {
+exports.execute = (req, res) => {
     console.log(JSON.stringify(req.headers));
     JWT(req.body, process.env.jwtSecret, async (err, decoded) => {
         if (err) {
@@ -58,25 +58,28 @@ exports.execute = function (req, res) {
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             console.log('##### decoded ####=>', decoded);
 
-            const { value, expiredAt } = req.app.locals.token;
+            const { value, expiresAt } = req.app.locals.token;
 
             const now = new Date();
-
-            let token = '';
+        
             let accountBalance = 0.0;
             let balanceValidationFailed = false;
-
-            if (value === null || expiredAt < now) {
+        
+            const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+        
+            if (value === null || expiresAt < now) {
                 const { tokenApiUrl, tokenApiUsername, tokenApiPassword } = process.env;
-
-                console.log('Getting token...');
-                token = await axios.post(
-                    tokenApiUrl,
-                    {
+        
+                console.log('GETTING TOKEN...');
+                const token = await axios({
+                    method: 'post',
+                    url: tokenApiUrl,
+                    data: {
                         username: tokenApiUsername,
                         password: tokenApiPassword
-                    }
-                )
+                    },
+                    httpsAgent,
+                })
                     .then((res) => {
                         console.log('Token obtained.');
                         if (res.headers.authorization) return res.headers.authorization.substring(7);
@@ -84,7 +87,6 @@ exports.execute = function (req, res) {
                     .catch((err) => {
                         console.log('Error:');
                         console.log(err);
-                        console.log(JSON.stringify(err));
                     });
                 if (!token) balanceValidationFailed = true;
                 else {
@@ -93,8 +95,8 @@ exports.execute = function (req, res) {
                         expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 23),
                     };
                 }
-            } else token = value;
-
+            }
+        
             if (!balanceValidationFailed) {
                 const {
                     balancesApiUrl,
@@ -102,7 +104,7 @@ exports.execute = function (req, res) {
                     balancesApiChannel,
                     balancesApiService
                 } = process.env;
-    
+        
                 let phone = '';
                 for (const argument of decoded.inArguments) {
                     if (argument.phone) {
@@ -110,23 +112,20 @@ exports.execute = function (req, res) {
                         break;
                     }
                 }
-    
+        
                 console.log('Getting balance data...');
-                const saldoBalancesApiResponse = await axios.get(
-                    balancesApiUrl,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Session-Id': balancesApiSessionId,
-                            Channel: balancesApiChannel,
-                            Service: balancesApiService,
-                            SubId: `549${phone}`,
-                        },
-                        httpsAgent: new https.Agent({  
-                            rejectUnauthorized: false
-                        }),
-                    }
-                )
+                const saldoBalancesApiResponse = await axios({
+                    method: 'get',
+                    url: balancesApiUrl,
+                    headers: {
+                        Authorization: `Bearer ${req.app.locals.token.value}`,
+                        'Session-Id': balancesApiSessionId,
+                        Channel: balancesApiChannel,
+                        Service: balancesApiService,
+                        SubId: `549${phone}`,
+                    },
+                    httpsAgent,
+                })
                     .then((res) => {
                         console.log('Response');
                         console.log(res.data);
@@ -135,12 +134,11 @@ exports.execute = function (req, res) {
                     .catch((err) => {
                         console.log('Error:');
                         console.log(err);
-                        console.log(JSON.stringify(err));
                     });
                 if (!saldoBalancesApiResponse) balanceValidationFailed = true;
                 else accountBalance = saldoBalancesApiResponse.balancesDetails.accountBalance;
             }
-
+        
             res.send(200, {
                 accountBalance,
                 balanceValidationFailed,
