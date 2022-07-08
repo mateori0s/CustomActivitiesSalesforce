@@ -5,15 +5,13 @@ define(['postmonger'], (Postmonger) => {
     let payload = {};
     let eventDefinitionKey;
 
-    $(window).ready(onRender);
-    connection.on('initActivity', initialize);
-    connection.on('clickedNext', save);
-
-    function onRender() {
+    $(window).ready(() => {
         connection.trigger('ready');
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
-    }
+    });
+    connection.on('initActivity', initialize);
+    connection.on('clickedNext', save);
 
     /**
      * This function is to pull out the event definition within journey builder.
