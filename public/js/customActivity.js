@@ -3,7 +3,6 @@ define(['postmonger'], (Postmonger) => {
 
     let connection = new Postmonger.Session();
     let payload = {};
-
     let eventDefinitionKey;
 
     $(window).ready(() => {
