@@ -3,11 +3,6 @@ const util = require('util');
 const axios = require("axios");
 const https = require("https");
 
-const JWT = (body, secret, cb) => {
-	if (!body) return cb(new Error('invalid jwtdata'));
-	require('jsonwebtoken').verify(body.toString('utf8'), secret, { algorithm: 'HS256' }, cb);
-};
-
 exports.logExecuteData = [];
 const logData = (req) => { // Log data from the request and put it in an array accessible to the main app.
     exports.logExecuteData.push({
@@ -48,25 +43,11 @@ const logData = (req) => { // Log data from the request and put it in an array a
     console.log("originalUrl: " + req.originalUrl);
 }
 
-/*
- * POST Handler for / route of Activity (this is the edit route).
- */
-exports.edit = (req, res) => {
-    logData(req);
-    res.send(200, 'Edit');
+const JWT = (body, secret, cb) => {
+	if (!body) return cb(new Error('invalid jwtdata'));
+	require('jsonwebtoken').verify(body.toString('utf8'), secret, { algorithm: 'HS256' }, cb);
 };
 
-/*
- * POST Handler for /save/ route of Activity.
- */
-exports.save = (req, res) => {
-    logData(req);
-    res.send(200, 'Save');
-};
-
-/*
- * POST Handler for /execute/ route of Activity.
- */
 exports.execute = function (req, res) {
     console.log(JSON.stringify(req.headers));
     JWT(req.body, process.env.jwtSecret, async (err, decoded) => {
@@ -171,25 +152,26 @@ exports.execute = function (req, res) {
     });
 };
 
-/*
- * POST Handler for /publish/ route of Activity.
- */
+exports.edit = (req, res) => {
+    logData(req);
+    res.send(200, 'Edit');
+};
+
+exports.save = (req, res) => {
+    logData(req);
+    res.send(200, 'Save');
+};
+
 exports.publish = (req, res) => {
     logData(req);
     res.send(200, 'Publish');
 };
 
-/*
- * POST Handler for /validate/ route of Activity.
- */
 exports.validate = (req, res) => {
     logData(req);
     res.send(200, 'Validate');
 };
 
-/*
- * POST Handler for /Stop/ route of Activity.
- */
 exports.stop = (req, res) => {
     logData(req);
     res.send(200, 'Stop');
