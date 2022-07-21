@@ -1,11 +1,11 @@
 "use strict";
 const activity = require("./activity");
-const configJsonFile = require("../public/config.json");
+const configJsonFile = require("../../public/config.json");
 
 /*
  * GET home page.
  */
-exports.index = (req, res) => {
+exports.index = (req: any, res: any) => {
 	if (!req.session.token) {
 		res.render("index", {
 			title: "Unauthenticated",
@@ -19,16 +19,16 @@ exports.index = (req, res) => {
 	}
 };
 
-exports.login = (req, res) => {
+exports.login = (req: any, res: any) => {
 	console.log("req.body: ", req.body);
 	res.redirect("/");
 };
 
-exports.logout = (req, res) => {
+exports.logout = (req: any, res: any) => {
 	req.session.token = "";
 };
 
-exports.configJson = async (req, res) => {
+exports.configJson = async (req: any, res: any) => {
 	configJsonFile.configurationArguments.applicationExtensionKey = process.env.applicationExtensionKey;
 	configJsonFile.arguments.execute.url = `${process.env.thisServerBaseUrl}/journeybuilder/execute`;
 	configJsonFile.configurationArguments.save.url = `${process.env.thisServerBaseUrl}/journeybuilder/save`;
@@ -37,3 +37,5 @@ exports.configJson = async (req, res) => {
 	configJsonFile.configurationArguments.validate.url = `${process.env.thisServerBaseUrl}/journeybuilder/validate`;
 	res.json(configJsonFile);
 };
+
+export {};

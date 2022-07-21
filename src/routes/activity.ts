@@ -1,9 +1,12 @@
 'use strict';
+
+import { Request, Response } from "express";
+
 const util = require('util');
 const axios = require("axios");
 
 exports.logExecuteData = [];
-const logData = (req) => { // Log data from the request and put it in an array accessible to the main app.
+const logData = (req: Request) => { // Log data from the request and put it in an array accessible to the main app.
     exports.logExecuteData.push({
         body: req.body,
         headers: req.headers,
@@ -42,7 +45,7 @@ const logData = (req) => { // Log data from the request and put it in an array a
     console.log("originalUrl: " + req.originalUrl);
 }
 
-const JWT = (body, secret, cb) => {
+const JWT = (body: any, secret, cb) => {
 	if (!body) {
 		return cb(new Error('invalid jwtdata'));
 	}
@@ -51,7 +54,7 @@ const JWT = (body, secret, cb) => {
 	}, cb);
 };
 
-exports.execute = function (req, res) {
+exports.execute = async function (req: Request, res: Response) {
     console.log(JSON.stringify(req.headers));
     JWT(req.body, process.env.jwtSecret, async (err, decoded) => {
         if (err) {
@@ -59,7 +62,9 @@ exports.execute = function (req, res) {
             return res.status(401).end();
         }
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            console.log('##### decoded ####=>', decoded);
+            console.log('##### decoded ####=>', decoded); */
+            res.send(200, 'Hola.');
+            return;
             const { brokerSmsApiURL, brokerSecret, brokerUserKey } = process.env;
             const requestBody = {};
             for (const argument of decoded.inArguments) {
@@ -128,34 +133,36 @@ exports.execute = function (req, res) {
                 messageWasSent: messageSendingFailed ? false : (messageSendingResponse ? true : false),
                 messageSendingFailed
             });
-        } else {
+        /* } else {
             console.error('inArguments invalid.');
             return res.status(400).end();
         }
-    });
+    }); */
 };
 
-exports.edit = (req, res) => {
+exports.edit = (req: any, res: any) => {
     logData(req);
     res.send(200, 'Edit');
 };
 
-exports.save = (req, res) => {
+exports.save = (req: any, res: any) => {
     logData(req);
     res.send(200, 'Save');
 };
 
-exports.publish = (req, res) => {
+exports.publish = (req: any, res: any) => {
     logData(req);
     res.send(200, 'Publish');
 };
 
-exports.validate = (req, res) => {
+exports.validate = (req: any, res: any) => {
     logData(req);
     res.send(200, 'Validate');
 };
 
-exports.stop = (req, res) => {
+exports.stop = (req: any, res: any) => {
     logData(req);
     res.send(200, 'Stop');
 };
+
+export {};

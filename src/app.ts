@@ -13,7 +13,10 @@ const app = express();
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.raw({type: 'application/jwt'}));
 app.get('/config.json', routes.configJson);
-app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+app.use(express.static(path.join(__dirname, '../public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -35,3 +38,5 @@ http.createServer(app).listen(
     console.log('Express server listening on port ' + app.get('port'));
   }
 );
+
+export {};
