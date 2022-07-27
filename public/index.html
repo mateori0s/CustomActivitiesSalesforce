@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CA CDP Claro Broker - Heroku</title>
+        <title>CA CDP Claro Broker - Apigee</title>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie-edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link href='https://fonts.googleapis.com/css?family=lobster' rel='stylesheet' type='text/css'>
-        <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.8.3/fonts/SalesforceSans-Bold.ttf">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel='stylesheet' href="css/styles.css">
         <script type="text/javascript" src="js/require.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -24,29 +24,26 @@
     </head>
     <body>
         <div class="main-block">
-            <h1>CA CDP Claro Broker - Heroku</h1>
+            <h3>CA CDP Claro Broker - Apigee</h3>
             <span class="description-span">Envía un mensaje a un número de celular.</span>
-            <form class="main-form" action="/">
-                <span class="text-input-span">Mensaje:</span>
+            <form action="/">
+                <hr>
                 <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
-                <input type="text" name="messageText" id="messageText" placeholder="Mensaje" required class="text-input"/>
-                <span class="text-input-span">Asunto:</span>
+                <input type="text" name="messageText" id="messageText" placeholder="Mensaje" required/>
                 <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
                 <input type="text" name="subject" id="subject" placeholder="Asunto" required class="text-input"/>
-                <div class="boolean-input-container">
-                    <span class="input-span">Urgente:</span>
-                    <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
-                    <input type="radio" id="urgente-true" name="urgente" value="true">
+                <div class="switch-field">
+                    <span >Urgente</span>
+                    <input type="radio" id="urgente-true" name="urgente" value="true"/>
                     <label for="urgente-true">Si</label>
-                    <input type="radio" id="urgente-false" name="urgente" value="false">
+                    <input type="radio" id="urgente-false" name="urgente" value="false" checked/>
                     <label for="urgente-false">No</label>
                 </div>
-                <div class="boolean-input-container">
-                    <span class="input-span">Validar:</span>
-                    <label id="icon" for="validar"><i class="fa-solid fa-comment-sms"></i></label>
-                    <input type="radio" id="validar-true" name="validar" value="true">
+                <div class="switch-field">
+                    <span >Validar</span>
+                    <input type="radio" id="validar-true" name="validar" value="true"/>
                     <label for="validar-true">Si</label>
-                    <input type="radio" id="validar-false" name="validar" value="false">
+                    <input type="radio" id="validar-false" name="validar" value="false" checked/>
                     <label for="validar-false">No</label>
                 </div>
             </form>

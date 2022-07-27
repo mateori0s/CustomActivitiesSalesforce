@@ -75,6 +75,7 @@ exports.execute = function (req, res) {
                             requestBody.urgente = 0;
                             break;
                         default:
+                            requestBody.urgente = 0;
                             break;
                     }
                 }
@@ -87,6 +88,7 @@ exports.execute = function (req, res) {
                             requestBody.validar = 0;
                             break;
                         default:
+                            requestBody.validar = 0;
                             break;
                     }
                 }
