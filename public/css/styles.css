@@ -1,28 +1,35 @@
-:root {
-   --orange: hsl(23, 88.1%, 63.7%);
-   --lightblue: hsl(193, 65.9%, 75.9%);
+html, body {
+   display: flex;
+   justify-content: center;
+   height: 100%;
+}
+
+body, div, form, input {
+   padding: 0;
+   margin: 0;
+   outline: none;
+   font-family: Roboto, Arial, sans-serif;
+   font-size: 16px;
+   color: #666;
+}
+
+hr {
+   color: #a9a9a9;
+   opacity: 0.3;
 }
 
 .main-block {
-   background-color: var(--orange);
-   border: 1px solid black;
+   max-width: 340px;
+   min-height: 400px;
+   padding: 10px 0;
+   margin: auto;
    border-radius: 5px;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   margin: 15px;
-   padding: 15px;
-}
-
-.description-span {
+   border: solid 1px #ccc;
+   box-shadow: 1px 2px 5px rgba(0,0,0,.31);
+   background: #ebebeb;
    text-align: center;
-   margin-bottom: 20px;
 }
 
-body {
-   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-   background-color: var(--lightblue);
+form {
+   margin: 0 30px;
 }
