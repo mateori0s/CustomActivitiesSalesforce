@@ -16,7 +16,7 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "providerId": "" },
+                { "packsType": "" },
                 { "age": "" },
                 { "email": "" },
                 { "firstname": "" },
@@ -70,7 +70,7 @@
             "execute": {
                 "inArguments": [
                     {
-                        "providerId": {
+                        "packsType": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"

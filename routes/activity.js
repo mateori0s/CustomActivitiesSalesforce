@@ -59,11 +59,11 @@ exports.execute = function (req, res) {
 
             const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
             let phone = '';
+            let packsType = '';
             for (const argument of decoded.inArguments) {
-                if (argument.phone) {
-                    phone = argument.phone;
-                    break;
-                }
+                if (argument.phone) phone = argument.phone;
+                else if (argument.packsType) packsType = argument.packsType;
+                if (phone && packsType) break;
             }
 
             console.log('Getting packs data...');
