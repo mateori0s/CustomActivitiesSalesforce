@@ -28,12 +28,20 @@ define(['postmonger'], (Postmonger) => {
 
     connection.on('clickedNext', () => {
         let packsType = null;
-        if (document.getElementById('packs-type-upc').checked) packsType = 'upc';
-        if (document.getElementById('packs-type-ms').checked) packsType = 'ms';
+        let packsAdditionalData_AttributeName = null;
+        if (document.getElementById('packs-type-upc').checked) {
+            packsType = 'upc';
+            packsAdditionalData_AttributeName = 'PACK_UPC_FINAL';
+        }
+        if (document.getElementById('packs-type-ms').checked) {
+            packsType = 'ms';
+            packsAdditionalData_AttributeName = 'PACK_SEGMENTO_FINAL';
+        }
 
         payload['arguments'].execute.inArguments = [
             { packsType },
             { cellularnumber: `{{Event.${eventDefinitionKey}.cellularnumber}}` },
+            { packFinal: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.${packsAdditionalData_AttributeName}}}` },
             /* { age: `{{Event.${eventDefinitionKey}.age}}` },
             { email: `{{Event.${eventDefinitionKey}.email}}` },
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },

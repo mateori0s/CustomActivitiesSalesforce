@@ -17,7 +17,8 @@
         "execute": {
             "inArguments": [
                 { "packsType": "" },
-                { "cellularnumber": "" }
+                { "cellularnumber": "" },
+                { "packFinal": "" }
             ],
             "outArguments": [],
             "url": "<URL_SERVER>/journeybuilder/execute",
@@ -70,6 +71,11 @@
                             "direction": "in"
                         },
                         "cellularnumber": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "packFinal": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
