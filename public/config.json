@@ -18,7 +18,9 @@
             "inArguments": [
                 { "packsType": "" },
                 { "cellularnumber": "" },
-                { "packFinal": "" }
+                { "packFinal": "" },
+                { "packPrice": "" },
+                { "packMsj": "" }
             ],
             "outArguments": [],
             "url": "<URL_SERVER>/journeybuilder/execute",
@@ -79,12 +81,27 @@
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
+                        },
+                        "packPrice": {
+                            "dataType": "Decimal",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "packMsj": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
                         }
                     }
                 ],
                 "outArguments": [{
                     "phoneNumberCanBuyAPack": {
                         "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "messageToSend": {
+                        "dataType": "Text",
                         "direction": "out",
                         "access": "visible"
                     },

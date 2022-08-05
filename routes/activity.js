@@ -58,21 +58,22 @@ exports.execute = function (req, res) {
             console.log('##### decoded ####=>', decoded);
 
             const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
-            let packsType = '';
-            let cellularnumber = '';
-            let packFinal = '';
+
+            let cellularnumber = null;
+            let packFinal = null;
+            let packPrice = null;
+            let packMsj = null;
             for (const argument of decoded.inArguments) {
-                if (argument.packsType) packsType = argument.packsType;
-                else if (argument.cellularnumber) cellularnumber = argument.cellularnumber;
+                if (argument.cellularnumber) cellularnumber = argument.cellularnumber;
                 else if (argument.packFinal) packFinal = argument.packFinal;
-                if (packsType && cellularnumber && packFinal) break;
+                else if (argument.packPrice) packPrice = argument.packPrice;
+                else if (argument.packMsj) packMsj = argument.packMsj;
+                if (cellularnumber && packFinal && packPrice && packMsj) break;
             }
 
             console.log('Getting packs data...');
-            console.log('Body:');
             let packsValidationFailed = false;
-            let packsValidationError = null;
-            const packsValidationResponse = await axios.post(
+            const pack = await axios.post(
                 claroOffersApiUrl,
                 {
                     billNumber: Number(cellularnumber),
@@ -88,19 +89,63 @@ exports.execute = function (req, res) {
                 .then((res) => {
                     console.log('Response:');
                     console.log(res.data);
-                    return res.data;
+
+                    let packFound = null;
+                    for (const service of res.data.offerServices) {
+                        for (const pack of service.offerPacks) {
+                            if (pack.packId === packFinal && pack.canBePurchased === true) {
+                                packFound = pack;
+                                break;
+                            }
+                        }
+                        if (packFound !== null) break;
+                    }
+
+                    return packFound;
                 })
                 .catch((error) => {
                     console.log('Error:');
                     console.log(error);
                     packsValidationFailed = true;
-                    packsValidationError = JSON.stringify(error);
                 });
 
-            res.send(200, {
-                phoneNumberCanBuyAPack: packsValidationFailed ? false : ((packsValidationResponse.canBePurchased === true && packsValidationResponse.packId) ? true : false),
+            let messageToSend = '';
+
+            if (pack && !packsValidationFailed) {
+                const { unitsTime, initialVolume, initialUnit, volumeTime } = pack.detail;
+
+                let unitsTimeWord = null;
+                switch (unitsTime) {
+                   case 'hora':
+                      unitsTimeWord = { singular: 'hora', plural: 'horas' };
+                      break;
+                   case 'dia':
+                      unitsTimeWord = { singular: 'día', plural: 'días' };
+                      break;
+                   case 'mes':
+                      unitsTimeWord = { singular: 'mes', plural: 'meses' };
+                      break;
+                   default:
+                      break;
+                }
+
+                let packPriceText = String(packPrice).replace('.', ',');
+                if (getNumberFloatingScale(packPrice) === 1) packPriceText += '0';
+
+                messageToSend = packMsj
+                    .trim()
+                    .replace('#C#', `${initialVolume}${initialUnit}`)
+                    .replace('#V#', `${volumeTime} ${volumeTime === 1 ? unitsTimeWord.singular : unitsTimeWord.plural}`)
+                    .replace('#P#', packPriceText);
+            }
+
+            const response = {
+                phoneNumberCanBuyAPack: pack === null ? false : true,
+                messageToSend,
                 packsValidationFailed
-            });
+            };
+            console.log('##### response ####=>', response);
+            res.send(200, response);
         } else {
             console.error('inArguments invalid.');
             return res.status(400).end();
@@ -131,4 +176,11 @@ exports.validate = (req, res) => {
 exports.stop = (req, res) => {
     logData(req);
     res.send(200, 'Stop');
+};
+
+const getNumberFloatingScale = (number) => {
+    const stringifiedNumber = String(number);
+    const floatingPointIndex = stringifiedNumber.indexOf('.');
+    if (floatingPointIndex === -1) return 0;
+    return stringifiedNumber.substring(floatingPointIndex + 1).length;
 };

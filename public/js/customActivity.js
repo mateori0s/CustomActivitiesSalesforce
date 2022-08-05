@@ -28,27 +28,22 @@ define(['postmonger'], (Postmonger) => {
 
     connection.on('clickedNext', () => {
         let packsType = null;
-        let packsAdditionalData_AttributeName = null;
+        let attributeKeyWord = null;
         if (document.getElementById('packs-type-upc').checked) {
             packsType = 'upc';
-            packsAdditionalData_AttributeName = 'PACK_UPC_FINAL';
+            attributeKeyWord = 'UPC';
         }
         if (document.getElementById('packs-type-ms').checked) {
             packsType = 'ms';
-            packsAdditionalData_AttributeName = 'PACK_SEGMENTO_FINAL';
+            attributeKeyWord = 'SEGMENTO';
         }
 
         payload['arguments'].execute.inArguments = [
             { packsType },
             { cellularnumber: `{{Event.${eventDefinitionKey}.cellularnumber}}` },
-            { packFinal: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.${packsAdditionalData_AttributeName}}}` },
-            /* { age: `{{Event.${eventDefinitionKey}.age}}` },
-            { email: `{{Event.${eventDefinitionKey}.email}}` },
-            { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
-            { id: `{{Event.${eventDefinitionKey}.id}}` },
-            { lastname: `{{Event.${eventDefinitionKey}.lastname}}` },
-            { phone: `{{Event.${eventDefinitionKey}.phone}}` },
-            { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` } */
+            { packFinal: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.PACK_${attributeKeyWord}_FINAL}}` },
+            { packPrice: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.PACK_${attributeKeyWord}_PRICE}}` },
+            { packMsj: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.PACK_${attributeKeyWord}_MSJ}}` },
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
