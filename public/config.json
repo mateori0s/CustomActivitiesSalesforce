@@ -17,13 +17,7 @@
         "execute": {
             "inArguments": [
                 { "packsType": "" },
-                { "age": "" },
-                { "email": "" },
-                { "firstname": "" },
-                { "id": "" },
-                { "lastname": "" },
-                { "phone": "" },
-                { "claveSuscriptor": "" }
+                { "cellularnumber": "" }
             ],
             "outArguments": [],
             "url": "<URL_SERVER>/journeybuilder/execute",
@@ -75,37 +69,7 @@
                             "isNullable": false,
                             "direction": "in"
                         },
-                        "age": {
-                            "dataType": "Number",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "email": {
-                            "dataType": "Email",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "firstname": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "id": {
-                            "dataType": "Number",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "lastname": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "phone": {
-                            "dataType": "Phone",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "claveSuscriptor": {
+                        "cellularnumber": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"

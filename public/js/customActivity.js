@@ -33,13 +33,14 @@ define(['postmonger'], (Postmonger) => {
 
         payload['arguments'].execute.inArguments = [
             { packsType },
-            { age: `{{Event.${eventDefinitionKey}.age}}` },
+            { cellularnumber: `{{Event.${eventDefinitionKey}.cellularnumber}}` },
+            /* { age: `{{Event.${eventDefinitionKey}.age}}` },
             { email: `{{Event.${eventDefinitionKey}.email}}` },
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
             { id: `{{Event.${eventDefinitionKey}.id}}` },
             { lastname: `{{Event.${eventDefinitionKey}.lastname}}` },
             { phone: `{{Event.${eventDefinitionKey}.phone}}` },
-            { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
+            { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` } */
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);

@@ -58,12 +58,12 @@ exports.execute = function (req, res) {
             console.log('##### decoded ####=>', decoded);
 
             const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
-            let phone = '';
             let packsType = '';
+            let cellularnumber = '';
             for (const argument of decoded.inArguments) {
-                if (argument.phone) phone = argument.phone;
-                else if (argument.packsType) packsType = argument.packsType;
-                if (phone && packsType) break;
+                if (argument.packsType) packsType = argument.packsType;
+                else if (argument.cellularnumber) cellularnumber = argument.cellularnumber;
+                if (packsType && cellularnumber) break;
             }
 
             console.log('Getting packs data...');
@@ -73,7 +73,7 @@ exports.execute = function (req, res) {
             const packsValidationResponse = await axios.post(
                 claroOffersApiUrl,
                 {
-                    billNumber: Number(phone),
+                    billNumber: Number(cellularnumber),
                     channel: "PDC"
                 },
                 {
