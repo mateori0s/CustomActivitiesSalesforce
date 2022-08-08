@@ -21,7 +21,7 @@ define(['postmonger'], (Postmonger) => {
             { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
             { id: `{{Event.${eventDefinitionKey}.id}}` },
             { lastname: `{{Event.${eventDefinitionKey}.lastname}}` },
-            { phone: `{{Event.${eventDefinitionKey}.phone}}` },
+            { phone: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.CELLULAR_NUMBER}}` },
             { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
         ];
         payload['metaData'].isConfigured = true;
