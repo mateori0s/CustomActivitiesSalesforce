@@ -107,6 +107,7 @@ exports.execute = function (req, res) {
                     console.log('Error:');
                     console.log(error);
                     packsValidationFailed = true;
+                    return null;
                 });
 
             let messageToSend = '';
