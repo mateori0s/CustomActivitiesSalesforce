@@ -50,13 +50,7 @@ define(['postmonger'], (Postmonger) => {
             { subject: document.getElementById('subject').value },
             { urgente },
             { validar },
-            { age: `{{Event.${eventDefinitionKey}.age}}` },
-            { email: `{{Event.${eventDefinitionKey}.email}}` },
-            { firstname: `{{Event.${eventDefinitionKey}.firstname}}` },
-            { id: `{{Event.${eventDefinitionKey}.id}}` },
-            { lastname: `{{Event.${eventDefinitionKey}.lastname}}` },
-            { phone: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.CELLULAR_NUMBER}}` },
-            { claveSuscriptor: `{{Event.${eventDefinitionKey}.claveSuscriptor}}` }
+            { phone: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.CELLULAR_NUMBER}}` }
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
