@@ -32,7 +32,7 @@ define(['postmonger'], (Postmonger) => {
         document.getElementById(`urgente-${urgenteIdSuffix}`).checked = true;
 
         const validarArg = inArguments.find(arg => arg.validar);
-        let validarIdSuffix = (validarArg && validarArg.urgente === true) ? 'true' : 'false';
+        let validarIdSuffix = (validarArg && validarArg.validar === true) ? 'true' : 'false';
         document.getElementById(`validar-${validarIdSuffix}`).checked = true;
     });
 
