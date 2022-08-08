@@ -40,7 +40,7 @@ define(['postmonger'], (Postmonger) => {
 
         payload['arguments'].execute.inArguments = [
             { packsType },
-            { cellularnumber: `{{Event.${eventDefinitionKey}.cellularnumber}}` },
+            { cellularnumber: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.CELLULAR_NUMBER}}` },
             { packFinal: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.PACK_${attributeKeyWord}_FINAL}}` },
             { packPrice: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.PACK_${attributeKeyWord}_PRICE}}` },
             { packMsj: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.PACK_${attributeKeyWord}_MSJ}}` },
