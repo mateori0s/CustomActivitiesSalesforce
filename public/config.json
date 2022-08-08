@@ -16,13 +16,7 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "age": "" },
-                { "email": "" },
-                { "firstname": "" },
-                { "id": "" },
-                { "lastname": "" },
-                { "phone": "" },
-                { "claveSuscriptor": "" }
+                { "phone": "" }
             ],
             "outArguments": [],
             "url": "<URL_SERVER>/journeybuilder/execute",
@@ -69,38 +63,8 @@
             "execute": {
                 "inArguments": [
                     {
-                        "age": {
-                            "dataType": "Number",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "email": {
-                            "dataType": "Email",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "firstname": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "id": {
-                            "dataType": "Number",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "lastname": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
                         "phone": {
                             "dataType": "Phone",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "claveSuscriptor": {
-                            "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         }
