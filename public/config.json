@@ -8,7 +8,7 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro Packs - Heroku",
+            "name": "CA CDP Claro Oferta - Heroku",
             "description": "Revisa si un número de celular puede o no comprar un pack.",
             "step1Label": "Configure Activity"
         }

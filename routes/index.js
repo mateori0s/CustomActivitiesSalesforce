@@ -29,11 +29,12 @@ exports.logout = (req, res) => {
 };
 
 exports.configJson = async (req, res) => {
-	configJsonFile.configurationArguments.applicationExtensionKey = process.env.applicationExtensionKey;
-	configJsonFile.arguments.execute.url = `${process.env.thisServerBaseUrl}/journeybuilder/execute`;
-	configJsonFile.configurationArguments.save.url = `${process.env.thisServerBaseUrl}/journeybuilder/save`;
-	configJsonFile.configurationArguments.publish.url = `${process.env.thisServerBaseUrl}/journeybuilder/publish`;
-	configJsonFile.configurationArguments.stop.url = `${process.env.thisServerBaseUrl}/journeybuilder/stop`;
-	configJsonFile.configurationArguments.validate.url = `${process.env.thisServerBaseUrl}/journeybuilder/validate`;
+	const { applicationExtensionKey, thisServerBaseUrl: baseUrl, apigeeServerNamebackend: namebackend, apigeeServerUserKey: user_key } = process.env;
+	configJsonFile.configurationArguments.applicationExtensionKey = applicationExtensionKey;
+	configJsonFile.arguments.execute.url = `${baseUrl}/journeybuilder/execute?namebackend=${namebackend}&user_key=${user_key}`;
+	configJsonFile.configurationArguments.save.url = `${baseUrl}/journeybuilder/save?namebackend=${namebackend}&user_key=${user_key}`;
+	configJsonFile.configurationArguments.publish.url = `${baseUrl}/journeybuilder/publish?namebackend=${namebackend}&user_key=${user_key}`;
+	configJsonFile.configurationArguments.stop.url = `${baseUrl}/journeybuilder/stop?namebackend=${namebackend}&user_key=${user_key}`;
+	configJsonFile.configurationArguments.validate.url = `${baseUrl}/journeybuilder/validate?namebackend=${namebackend}&user_key=${user_key}`;
 	res.json(configJsonFile);
 };
