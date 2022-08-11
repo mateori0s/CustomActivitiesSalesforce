@@ -114,6 +114,7 @@ exports.execute = function (req, res) {
 
             if (pack && !packsValidationFailed) {
                 const { unitsTime, initialVolume, initialUnit, volumeTime } = pack.detail;
+                const { description } = pack;
 
                 let unitsTimeWord = null;
                 switch (unitsTime) {
@@ -133,11 +134,14 @@ exports.execute = function (req, res) {
                 let packPriceText = String(packPrice).replace('.', ',');
                 if (getNumberFloatingScale(packPrice) === 1) packPriceText += '0';
 
+                const discountValue = getDiscountValueFromPackDescription(description);
+
                 messageToSend = packMsj
                     .trim()
                     .replace('#C#', `${initialVolume}${initialUnit}`)
                     .replace('#V#', `${volumeTime} ${volumeTime === 1 ? unitsTimeWord.singular : unitsTimeWord.plural}`)
-                    .replace('#P#', packPriceText);
+                    .replace('#P#', packPriceText)
+                    .replace('#D#', discountValue !== null ? discountValue : '#D#');
             }
 
             const response = {
@@ -184,4 +188,22 @@ const getNumberFloatingScale = (number) => {
     const floatingPointIndex = stringifiedNumber.indexOf('.');
     if (floatingPointIndex === -1) return 0;
     return stringifiedNumber.substring(floatingPointIndex + 1).length;
+};
+
+const getDiscountValueFromPackDescription = (packDescription) => {
+    let i = packDescription.search('%Descuento');
+    if (i === -1) return null;
+    let discountValueCharacters = [];
+    let equalSymbolFound = false;
+    while (!equalSymbolFound) {
+       i -= 1;
+       const character = packDescription[i];
+       if (character !== '=') discountValueCharacters.unshift(character);
+       else equalSymbolFound = true;
+    }
+    let result = '';
+    for (const character of discountValueCharacters) {
+       result += character;
+    }
+    return Number(result);
 };
