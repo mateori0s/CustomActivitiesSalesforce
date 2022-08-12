@@ -20,9 +20,6 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments &&
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
-    
-        const messageTextArg = inArguments.find(arg => arg.messageText);
-        if (messageTextArg) document.getElementById('messageText').value = messageTextArg.messageText;
 
         const subjectArg = inArguments.find(arg => arg.subject);
         if (subjectArg) document.getElementById('subject').value = subjectArg.subject;
@@ -46,7 +43,7 @@ define(['postmonger'], (Postmonger) => {
         if (document.getElementById('validar-false').checked) validar = false;
 
         payload['arguments'].execute.inArguments = [
-            { messageText: document.getElementById('messageText').value },
+            { messageText: '{{Interaction.[#TO_REPLACE_ActivityCustomerKey#].messageToSend}}' },
             { subject: document.getElementById('subject').value },
             { urgente },
             { validar },

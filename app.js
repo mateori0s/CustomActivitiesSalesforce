@@ -6,8 +6,21 @@ const http = require('http');
 const path = require('path');
 const routes = require('./routes');
 const activity = require('./routes/activity');
+const fs = require('fs');
 
 const app = express();
+
+// Set ActivityCustomerKey in customActivity.js.
+const customActivityFilePath = './public/js/customActivity.js';
+fs.readFile(customActivityFilePath, 'utf8', (err, data) => {
+  if (err) return console.log(err);
+  fs.writeFile(
+    customActivityFilePath,
+    data.replace('[#TO_REPLACE_ActivityCustomerKey#]', process.env.activityCustomerKey),
+    'utf8',
+    (err) => { if (err) return console.log(err) },
+  );
+});
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);
