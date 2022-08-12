@@ -6,7 +6,6 @@ const http = require('http');
 const path = require('path');
 const routes = require('./routes');
 const activity = require('./routes/activity');
-const fs = require('fs');
 
 const app = express();
 
