@@ -57,7 +57,7 @@ exports.execute = function (req, res) {
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             console.log('##### decoded ####=>', decoded);
 
-            const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
+            /* const { claroOffersApiUrl, claroOffersApiSessionId } = process.env;
 
             let cellularnumber = null;
             let packFinal = null;
@@ -142,12 +142,13 @@ exports.execute = function (req, res) {
                     .replace('#V#', `${volumeTime} ${volumeTime === 1 ? unitsTimeWord.singular : unitsTimeWord.plural}`)
                     .replace('#P#', packPriceText)
                     .replace('#D#', discountValue !== null ? discountValue : '#D#');
-            }
+            } */
 
             const response = {
-                phoneNumberCanBuyAPack: pack === null ? false : true,
-                messageToSend,
-                packsValidationFailed
+                // phoneNumberCanBuyAPack: pack === null ? false : true,
+                phoneNumberCanBuyAPack: true,
+                messageToSend: 'Mensaje de prueba.',
+                packsValidationFailed: false,
             };
             console.log('##### response ####=>', response);
             res.send(200, response);
