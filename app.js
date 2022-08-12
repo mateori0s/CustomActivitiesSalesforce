@@ -10,7 +10,7 @@ const fs = require('fs');
 
 const app = express();
 
-// Set ActivityCustomerKey in customActivity.js.
+/* // Set ActivityCustomerKey in customActivity.js.
 const customActivityFilePath = './public/js/customActivity.js';
 fs.readFile(customActivityFilePath, 'utf8', (err, data) => {
   if (err) return console.log(err);
@@ -20,7 +20,7 @@ fs.readFile(customActivityFilePath, 'utf8', (err, data) => {
     'utf8',
     (err) => { if (err) return console.log(err) },
   );
-});
+}); */
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);

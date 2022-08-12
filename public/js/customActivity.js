@@ -4,6 +4,7 @@ define(['postmonger'], (Postmonger) => {
     let connection = new Postmonger.Session();
     let payload = {};
     let eventDefinitionKey;
+    let offerActivityCustomerKey;
 
     $(window).ready(() => {
         connection.trigger('ready');
@@ -43,12 +44,19 @@ define(['postmonger'], (Postmonger) => {
         if (document.getElementById('validar-false').checked) validar = false;
 
         payload['arguments'].execute.inArguments = [
-            { messageText: '{{Interaction.[#TO_REPLACE_ActivityCustomerKey#].messageToSend}}' },
+            // { messageText: `{{Interaction.${offerActivityCustomerKey}.messageToSend}}` },
             { subject: document.getElementById('subject').value },
             { urgente },
             { validar },
             { phone: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.CELLULAR_NUMBER}}` }
         ];
+
+        if (offerActivityCustomerKey) {
+            payload['arguments'].execute.inArguments.push(
+                { messageText: `{{Interaction.${offerActivityCustomerKey}.messageToSend}}` },
+            );
+        }
+
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
     });
@@ -56,5 +64,22 @@ define(['postmonger'], (Postmonger) => {
     connection.trigger('requestTriggerEventDefinition');
     connection.on('requestedTriggerEventDefinition', (eventDefinitionModel) => {
         if (eventDefinitionModel) eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
+    });
+
+    connection.trigger('requestInteraction');
+    connection.on('requestedInteraction', (interaction) => {
+        for (const a of interaction.activities) {
+            if (
+                a.schema &&
+                a.schema.arguments &&
+                a.schema.arguments.execute &&
+                a.schema.arguments.execute.outArguments &&
+                a.schema.arguments.execute.outArguments.length > 0
+            ) {
+                a.schema.arguments.execute.outArguments.forEach(inArg => {
+                    if (inArg.messageToSend) offerActivityCustomerKey = a.key;
+                });
+            }
+        }
     });
 });
