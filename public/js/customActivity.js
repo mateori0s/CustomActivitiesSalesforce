@@ -44,7 +44,6 @@ define(['postmonger'], (Postmonger) => {
         if (document.getElementById('validar-false').checked) validar = false;
 
         payload['arguments'].execute.inArguments = [
-            // { messageText: `{{Interaction.${offerActivityCustomerKey}.messageToSend}}` },
             { subject: document.getElementById('subject').value },
             { urgente },
             { validar },
