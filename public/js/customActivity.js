@@ -45,10 +45,34 @@ define(['postmonger'], (Postmonger) => {
 
         // determine the selected item (if there is one)
         if (activity.arguments.execute.inArguments) {
-            const existingSelection =
+            console.log('AAAAAAAAAAAAAAAAAAAA');
+            console.log(activity.arguments.execute.inArguments[0].mensajeTraducido);
+            console.log('BBBBBBBBBBBBBBBBBBBB');
+            console.log(
                 activity.arguments.execute.inArguments[0].mensajeTraducido ??
-                activity.arguments.execute.inArguments[0].mensajeTraducido;
-            if (existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
+                activity.arguments.execute.inArguments[0].mensajeTraducido
+            );
+
+            /* const existingSelection =
+                activity.arguments.execute.inArguments[0].mensajeTraducido ??
+                activity.arguments.execute.inArguments[0].mensajeTraducido; */
+
+            let existingSelection;
+            for (const inArgument of activity.arguments.execute.inArguments) {
+                if (inArgument.mensajeTraducido) {
+                    existingSelection = inArgument.mensajeTraducido;
+                    break;
+                }
+            }
+
+            console.log('CCCCCCCCCCCCCCCCCCCCC');
+            console.log(existingSelection);
+            if (existingSelection && existingSelection.split(".").length == 3) {
+                console.log('DDDDDDDDDDDDDDDDDDDD');
+                selectedValue = existingSelection.split(".")[1];
+                console.log('EEEEEEEEEEEEEEEEEEEE');
+                console.log(selectedValue);
+            }
         }
 
         // Populate the select dropdown.
