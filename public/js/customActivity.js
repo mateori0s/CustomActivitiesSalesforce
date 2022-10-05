@@ -32,31 +32,19 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('requestedInteraction', (payload) => {
-        console.log("-------- requestedInteraction --------");
+        /* console.log("-------- requestedInteraction --------");
         console.log("inArguments --> ", activity.arguments.execute.inArguments[0]);
 
         console.log("-------- payload --------");
         console.log(payload);
 
         console.log("-------- activity --------");
-        console.log(activity);
+        console.log(activity); */
 
         let selectedValue;
 
         // determine the selected item (if there is one)
         if (activity.arguments.execute.inArguments) {
-            console.log('AAAAAAAAAAAAAAAAAAAA');
-            console.log(activity.arguments.execute.inArguments[0].mensajeTraducido);
-            console.log('BBBBBBBBBBBBBBBBBBBB');
-            console.log(
-                activity.arguments.execute.inArguments[0].mensajeTraducido ??
-                activity.arguments.execute.inArguments[0].mensajeTraducido
-            );
-
-            /* const existingSelection =
-                activity.arguments.execute.inArguments[0].mensajeTraducido ??
-                activity.arguments.execute.inArguments[0].mensajeTraducido; */
-
             let existingSelection;
             for (const inArgument of activity.arguments.execute.inArguments) {
                 if (inArgument.mensajeTraducido) {
@@ -64,15 +52,7 @@ define(['postmonger'], (Postmonger) => {
                     break;
                 }
             }
-
-            console.log('CCCCCCCCCCCCCCCCCCCCC');
-            console.log(existingSelection);
-            if (existingSelection && existingSelection.split(".").length == 3) {
-                console.log('DDDDDDDDDDDDDDDDDDDD');
-                selectedValue = existingSelection.split(".")[1];
-                console.log('EEEEEEEEEEEEEEEEEEEE');
-                console.log(selectedValue);
-            }
+            if (existingSelection && existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
         }
 
         // Populate the select dropdown.
