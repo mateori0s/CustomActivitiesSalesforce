@@ -23,7 +23,7 @@ const logData = (req) => { // Log data from the request and put it in an array a
         secure: req.secure,
         originalUrl: req.originalUrl
     });
-    console.log("body: " + util.inspect(req.body));
+    /* console.log("body: " + util.inspect(req.body));
     console.log("headers: " + req.headers);
     console.log("trailers: " + req.trailers);
     console.log("method: " + req.method);
@@ -39,7 +39,7 @@ const logData = (req) => { // Log data from the request and put it in an array a
     console.log("stale: " + req.stale);
     console.log("protocol: " + req.protocol);
     console.log("secure: " + req.secure);
-    console.log("originalUrl: " + req.originalUrl);
+    console.log("originalUrl: " + req.originalUrl); */
 }
 
 const JWT = (body, secret, cb) => {
@@ -52,71 +52,38 @@ const JWT = (body, secret, cb) => {
 };
 
 exports.execute = function (req, res) {
-    console.log(JSON.stringify(req.headers));
-    JWT(req.body, process.env.jwtSecret, async (err, decoded) => {
+    // console.log(JSON.stringify(req.headers));
+    JWT(req.body, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
             console.error(err);
             return res.status(401).end();
         }
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            console.log('##### decoded ####=>', decoded);
-            const { brokerSmsApiURL, brokerSecret, brokerUserKey } = process.env;
-            const requestBody = {};
+            // console.log('##### decoded ####=>', decoded);
+            const { BROKER_SMS_API_URL, BROKER_USER_KEY } = process.env;
+            const requestBody = { sender: 'Claro', urgente: 0, validar: 0 };
             for (const argument of decoded.inArguments) {
-                if (argument.messageText) requestBody.mensaje = argument.messageText;
-                else if (argument.phone) requestBody.bill_number = argument.phone;
-                else if (argument.subject) requestBody.subject = `[${argument.subject}] `;
-                else if (argument.urgente !== undefined) {
-                    switch (argument.urgente) {
-                        case true:
-                            requestBody.urgente = 1;
-                            break;
-                        case false:
-                            requestBody.urgente = 0;
-                            break;
-                        default:
-                            requestBody.urgente = 0;
-                            break;
-                    }
-                }
-                else if (argument.validar !== undefined) {
-                    switch (argument.validar) {
-                        case true:
-                            requestBody.validar = 1;
-                            break;
-                        case false:
-                            requestBody.validar = 0;
-                            break;
-                        default:
-                            requestBody.validar = 0;
-                            break;
-                    }
-                }
-                if (
-                    requestBody.bill_number &&
-                    requestBody.mensaje &&
-                    requestBody.subject &&
-                    requestBody.urgente !== undefined &&
-                    requestBody.validar !== undefined
-                ) break;
+                if (argument.mensajeTraducido) requestBody.mensaje = argument.mensajeTraducido;
+                else if (argument.Cellular_number) requestBody.bill_number = argument.Cellular_number;
+                else if (argument.Remitente) requestBody.source = argument.Remitente;
+                if (requestBody.bill_number && requestBody.mensaje && requestBody.source) break;
             }
 
-            console.log('Sending message...\nBody:');
-            console.log(JSON.stringify(requestBody));
+            /* console.log('Sending message...\nBody:');
+            console.log(JSON.stringify(requestBody)); */
             let messageSendingFailed = false;
             const messageSendingResponse = await axios.post(
-                `${brokerSmsApiURL}/v1/cdpbroker-test/online_loader/notificacion/cargarnotificacionDn/sms/`,
+                `${BROKER_SMS_API_URL}/online_loader/notificacion/cargarnotificacionDn/sms/`,
                 requestBody,
                 {
                     headers: {
-                        Authorization: `Basic ${brokerSecret}`,
-                        user_key: brokerUserKey
+                        user_key: BROKER_USER_KEY
                     }
                 }
             )
                 .then((res) => {
-                    console.log('Response:');
-                    console.log(res.data);
+                    /* console.log('Response:');
+                    console.log(res.data); */
                     return res.data;
                 })
                 .catch((error) => {
@@ -127,8 +94,7 @@ exports.execute = function (req, res) {
                     messageSendingFailed = true;
                 });
             res.send(200, {
-                messageWasSent: messageSendingFailed ? false : (messageSendingResponse ? true : false),
-                messageSendingFailed
+                BrokerStatus: messageSendingFailed ? false : (messageSendingResponse ? true : false),
             });
         } else {
             console.error('inArguments invalid.');

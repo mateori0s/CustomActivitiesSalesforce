@@ -8,22 +8,21 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro Broker - Heroku",
-            "description": "Envía un mensaje a un número de celular.",
+            "name": "DINAMICALLY_REPLACED",
+            "description": "Envía un SMS a un número de celular.",
             "step1Label": "Configure Activity"
         }
     },
     "arguments": {
         "execute": {
             "inArguments": [
-                { "messageText": "" },
-                { "subject": "" },
-                { "urgente": "" },
-                { "validar": "" },
-                { "phone": "" }
+                { "mensajeTraducido": "" },
+                { "Remitente": "" },
+                { "Cellular_number": "" }
             ],
             "outArguments": [],
-            "url": "<URL_SERVER>/journeybuilder/execute",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "body": "",
             "header": "",
@@ -33,24 +32,28 @@
         }
     },
     "configurationArguments": {
-        "applicationExtensionKey": "<APPLICATION_EXTENSION_KEY>",
+        "applicationExtensionKey": "DINAMICALLY_REPLACED",
         "save": {
-            "url": "<URL_SERVER>/journeybuilder/save",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "<URL_SERVER>/journeybuilder/publish",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "<URL_SERVER>/journeybuilder/stop",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "<URL_SERVER>/journeybuilder/validate",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         }
@@ -67,27 +70,17 @@
             "execute": {
                 "inArguments": [
                     {
-                        "messageText": {
+                        "mensajeTraducido": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         },
-                        "subject": {
+                        "Remitente": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         },
-                        "urgente": {
-                            "dataType": "Boolean",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "validar": {
-                            "dataType": "Boolean",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "phone": {
+                        "Cellular_number": {
                             "dataType": "Phone",
                             "isNullable": false,
                             "direction": "in"
@@ -95,12 +88,7 @@
                     }
                 ],
                 "outArguments": [{
-                    "messageWasSent": {
-                        "dataType": "Boolean",
-                        "direction": "out",
-                        "access": "visible"
-                    },
-                    "messageSendingFailed": {
+                    "BrokerStatus": {
                         "dataType": "Boolean",
                         "direction": "out",
                         "access": "visible"

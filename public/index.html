@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CA CDP Claro Broker - Heroku</title>
+        <title>Envío de SMS</title>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie-edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,25 +24,22 @@
     </head>
     <body>
         <div class="main-block">
-            <h3>CA CDP Claro Broker - Heroku</h3>
-            <span class="description-span">Envía un mensaje a un número de celular.</span>
+            <h3>Envío de SMS</h3>
+            <span class="description-span">Envía un SMS a un número de celular.</span>
             <form action="/">
                 <hr>
                 <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
-                <input type="text" name="subject" id="subject" placeholder="Asunto" required class="text-input"/>
-                <div class="switch-field">
-                    <span >Urgente</span>
-                    <input type="radio" id="urgente-true" name="urgente" value="true"/>
-                    <label for="urgente-true">Si</label>
-                    <input type="radio" id="urgente-false" name="urgente" value="false" checked/>
-                    <label for="urgente-false">No</label>
-                </div>
-                <div class="switch-field">
-                    <span >Validar</span>
-                    <input type="radio" id="validar-true" name="validar" value="true"/>
-                    <label for="validar-true">Si</label>
-                    <input type="radio" id="validar-false" name="validar" value="false" checked/>
-                    <label for="validar-false">No</label>
+                <input type="text" name="remitente" id="remitente" placeholder="Remitente" required="" class="text-input">
+                <hr />
+                <label for="messageActivity">Seleccione la Custom Activity con el MensajeTraducido</label>
+                <br />
+                <div class="btn-block">
+                    <select
+                        id="messageActivity"
+                        name="messageActivity"
+                        class="slds-select"
+                    >
+                    </select>
                 </div>
             </form>
         </div>

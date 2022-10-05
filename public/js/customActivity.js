@@ -2,18 +2,22 @@ define(['postmonger'], (Postmonger) => {
     'use strict';
 
     let connection = new Postmonger.Session();
-    let payload = {};
+    let activity;
+
+    // Configuration variables
     let eventDefinitionKey;
-    let offerActivityCustomerKey;
 
     $(window).ready(() => {
+        // JB will respond the first time 'ready' is called with 'initActivity'
         connection.trigger('ready');
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
+        connection.trigger("requestTriggerEventDefinition");
+        connection.trigger("requestInteraction");
     });
 
     connection.on('initActivity', (data) => {
-        if (data) payload = data;
+        if (data) activity = data;
 
         const inArguments = Boolean(
             data.arguments &&
@@ -22,63 +26,84 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const subjectArg = inArguments.find(arg => arg.subject);
-        if (subjectArg) document.getElementById('subject').value = subjectArg.subject;
+        const remitenteArg = inArguments.find(arg => arg.Remitente);
 
-        const urgenteArg = inArguments.find(arg => arg.urgente);
-        let urgenteIdSuffix = (urgenteArg && urgenteArg.urgente === true) ? 'true' : 'false';
-        document.getElementById(`urgente-${urgenteIdSuffix}`).checked = true;
-
-        const validarArg = inArguments.find(arg => arg.validar);
-        let validarIdSuffix = (validarArg && validarArg.validar === true) ? 'true' : 'false';
-        document.getElementById(`validar-${validarIdSuffix}`).checked = true;
+        if (remitenteArg) document.getElementById('remitente').value = remitenteArg.Remitente;
     });
 
-    connection.on('clickedNext', () => {
-        let urgente = null;
-        if (document.getElementById('urgente-true').checked) urgente = true;
-        if (document.getElementById('urgente-false').checked) urgente = false;
+    connection.on('requestedInteraction', (payload) => {
+        console.log("-------- requestedInteraction --------");
+        console.log("inArguments --> ", activity.arguments.execute.inArguments[0]);
 
-        let validar = null;
-        if (document.getElementById('validar-true').checked) validar = true;
-        if (document.getElementById('validar-false').checked) validar = false;
+        console.log("-------- payload --------");
+        console.log(payload);
 
-        payload['arguments'].execute.inArguments = [
-            { subject: document.getElementById('subject').value },
-            { urgente },
-            { validar },
-            { phone: `{{Contact.Attribute.PACKS_ADDITIONAL_DATA.CELLULAR_NUMBER}}` }
+        console.log("-------- activity --------");
+        console.log(activity);
+
+        let selectedValue;
+
+        // determine the selected item (if there is one)
+        if (activity.arguments.execute.inArguments) {
+            const existingSelection =
+                activity.arguments.execute.inArguments[0].mensajeTraducido ??
+                activity.arguments.execute.inArguments[0].mensajeTraducido;
+            if (existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
+        }
+
+        // Populate the select dropdown.
+        const selectElement = document.getElementById("messageActivity");
+
+        payload.activities.forEach((a) => {
+            if (
+              a.schema &&
+              a.schema.arguments &&
+              a.schema.arguments.execute &&
+              a.schema.arguments.execute.outArguments &&
+              a.schema.arguments.execute.outArguments.length > 0
+            ) {
+              a.schema.arguments.execute.outArguments.forEach((inArg) => {
+                if (inArg.mensajeTraducido) {
+                  let option = document.createElement("option");
+                  option.text = `${a.name} - (${a.key})`;
+                  option.value = a.key;
+                  selectElement.add(option);
+                }
+              });
+            }
+        });
+
+        if (selectElement.childElementCount > 0) {
+            // If we have a previously selected value, repopulate that value.
+            if (selectedValue) {
+              const selectOption = selectElement.querySelector(`[value='${selectedValue}']`);
+              if (selectOption) selectOption.selected = true;
+              else console.log("Could not select value from list", `[value='${selectedValue}]'`);
+            }
+            // Let Journey Builder know the activity has changes.
+            connection.trigger("setActivityDirtyState", true);
+        }
+    });
+
+    connection.on('clickedNext', () => { // Save function within MC.
+        const select = document.getElementById("messageActivity");
+
+        activity['arguments'].execute.inArguments = [
+            { Remitente: document.getElementById('remitente').value },
+            { mensajeTraducido: `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}` },
+            { Cellular_number: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` }
         ];
 
-        if (offerActivityCustomerKey) {
-            payload['arguments'].execute.inArguments.push(
-                { messageText: `{{Interaction.${offerActivityCustomerKey}.messageToSend}}` },
-            );
-        }
-
-        payload['metaData'].isConfigured = true;
-        connection.trigger('updateActivity', payload);
+        activity['metaData'].isConfigured = true;
+        connection.trigger('updateActivity', activity);
     });
 
-    connection.trigger('requestTriggerEventDefinition');
+    /**
+     * This function is to pull out the event definition within journey builder.
+     * With the eventDefinitionKey, you are able to pull out values that passes through the journey
+     */
     connection.on('requestedTriggerEventDefinition', (eventDefinitionModel) => {
+        console.log("Requested TriggerEventDefinition", eventDefinitionModel.eventDefinitionKey);
         if (eventDefinitionModel) eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
-    });
-
-    connection.trigger('requestInteraction');
-    connection.on('requestedInteraction', (interaction) => {
-        for (const a of interaction.activities) {
-            if (
-                a.schema &&
-                a.schema.arguments &&
-                a.schema.arguments.execute &&
-                a.schema.arguments.execute.outArguments &&
-                a.schema.arguments.execute.outArguments.length > 0
-            ) {
-                a.schema.arguments.execute.outArguments.forEach(inArg => {
-                    if (inArg.messageToSend) offerActivityCustomerKey = a.key;
-                });
-            }
-        }
     });
 });
