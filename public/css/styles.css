@@ -63,6 +63,7 @@ input[type=text], input[type=password] {
    display: flex;
    padding-top: 20px;
    overflow: hidden;
+   justify-content: center;
 }
 
 .switch-field input {

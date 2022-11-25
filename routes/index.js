@@ -38,9 +38,6 @@ exports.configJson = async (req, res) => {
 		case 'test':
 			nameEnvironmentLabel = ' - TEST';
 			break;
-		case 'heroku':
-			nameEnvironmentLabel = ' - HEROKU';
-			break;
 		default:
 			break;
 	}

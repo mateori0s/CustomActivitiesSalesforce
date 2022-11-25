@@ -1,3 +1,21 @@
+function setIndependentMode() {
+    document.getElementById("dependentModeOptionsDiv").style.display = "none";
+    document.getElementById("independentModeOptionsDiv").style.display = "block";
+}
+
+function setDependentMode() {
+    document.getElementById("dependentModeOptionsDiv").style.display = "block";
+    document.getElementById("independentModeOptionsDiv").style.display = "none";
+}
+
+function getCaMode() {
+    let caMode;
+    for (const mode of ['independent', 'dependent']) {
+        if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
+    }
+    return caMode;
+}
+
 define(['postmonger'], (Postmonger) => {
     'use strict';
 
@@ -26,76 +44,88 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const remitenteArg = inArguments.find(arg => arg.Remitente);
+        const remitenteArg = inArguments.find(arg => arg.remitente);
 
-        if (remitenteArg) document.getElementById('remitente').value = remitenteArg.Remitente;
+        if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
+
+        const caModeArg = inArguments.find(arg => arg.caMode);
+        if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
+            document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
+        }
     });
 
     connection.on('requestedInteraction', (payload) => {
         /* console.log("-------- requestedInteraction --------");
-        console.log("inArguments --> ", activity.arguments.execute.inArguments[0]);
+        console.log("inArguments --> ", activity.arguments.execute.inArguments[0]); */
 
-        console.log("-------- payload --------");
-        console.log(payload);
+        let caMode = getCaMode();
 
-        console.log("-------- activity --------");
-        console.log(activity); */
+        if (caMode === 'dependent') {
+            let selectedValue;
 
-        let selectedValue;
-
-        // determine the selected item (if there is one)
-        if (activity.arguments.execute.inArguments) {
-            let existingSelection;
-            for (const inArgument of activity.arguments.execute.inArguments) {
-                if (inArgument.mensajeTraducido) {
-                    existingSelection = inArgument.mensajeTraducido;
-                    break;
+            // determine the selected item (if there is one)
+            if (activity.arguments.execute.inArguments) {
+                let existingSelection;
+                for (const inArgument of activity.arguments.execute.inArguments) {
+                    if (inArgument.mensajeTraducido) {
+                        existingSelection = inArgument.mensajeTraducido;
+                        break;
+                    }
                 }
+                if (existingSelection && existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
             }
-            if (existingSelection && existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
-        }
 
-        // Populate the select dropdown.
-        const selectElement = document.getElementById("messageActivity");
+            // Populate the select dropdown.
+            const selectElement = document.getElementById("messageActivity");
 
-        payload.activities.forEach((a) => {
-            if (
-              a.schema &&
-              a.schema.arguments &&
-              a.schema.arguments.execute &&
-              a.schema.arguments.execute.outArguments &&
-              a.schema.arguments.execute.outArguments.length > 0
-            ) {
-              a.schema.arguments.execute.outArguments.forEach((inArg) => {
-                if (inArg.mensajeTraducido) {
-                  let option = document.createElement("option");
-                  option.text = `${a.name} - (${a.key})`;
-                  option.value = a.key;
-                  selectElement.add(option);
+            payload.activities.forEach((a) => {
+                if (
+                    a.schema &&
+                    a.schema.arguments &&
+                    a.schema.arguments.execute &&
+                    a.schema.arguments.execute.outArguments &&
+                    a.schema.arguments.execute.outArguments.length > 0
+                ) {
+                    a.schema.arguments.execute.outArguments.forEach((inArg) => {
+                        if (inArg.mensajeTraducido) {
+                        let option = document.createElement("option");
+                        option.text = `${a.name} - (${a.key})`;
+                        option.value = a.key;
+                        selectElement.add(option);
+                        }
+                    });
                 }
-              });
-            }
-        });
+            });
 
-        if (selectElement.childElementCount > 0) {
-            // If we have a previously selected value, repopulate that value.
-            if (selectedValue) {
-              const selectOption = selectElement.querySelector(`[value='${selectedValue}']`);
-              if (selectOption) selectOption.selected = true;
-              else console.log("Could not select value from list", `[value='${selectedValue}]'`);
+            if (selectElement.childElementCount > 0) {
+                // If we have a previously selected value, repopulate that value.
+                if (selectedValue) {
+                const selectOption = selectElement.querySelector(`[value='${selectedValue}']`);
+                if (selectOption) selectOption.selected = true;
+                    else console.log("Could not select value from list", `[value='${selectedValue}]'`);
+                }
+                // Let Journey Builder know the activity has changes.
+                connection.trigger("setActivityDirtyState", true);
             }
-            // Let Journey Builder know the activity has changes.
-            connection.trigger("setActivityDirtyState", true);
         }
     });
 
     connection.on('clickedNext', () => { // Save function within MC.
-        const select = document.getElementById("messageActivity");
+        let caMode = getCaMode();
+
+        let mensajeTraducido;
+        if (caMode === 'dependent') {
+            const select = document.getElementById("messageActivity");
+            mensajeTraducido = `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}`;
+        } else if (caMode === 'independent') {
+            mensajeTraducido = document.getElementById("mensajeIndependiente").value;
+        }
 
         activity['arguments'].execute.inArguments = [
-            { Remitente: document.getElementById('remitente').value },
-            { mensajeTraducido: `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}` },
-            { Cellular_number: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` }
+            { remitente: document.getElementById('remitente').value },
+            { mensajeTraducido },
+            { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
+            { caMode },
         ];
 
         activity['metaData'].isConfigured = true;

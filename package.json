@@ -1,5 +1,5 @@
 {
-  "name": "ca-cdp-claro",
+  "name": "cdp-ca-broker",
   "version": "1.0.1",
   "description": "CA CDP Claro Journey Builder",
   "engines": {
@@ -7,10 +7,6 @@
   },
   "scripts": {
     "start": "node app.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": ""
   },
   "keywords": [
     "journey",

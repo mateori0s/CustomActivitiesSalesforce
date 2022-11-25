@@ -1,6 +1,6 @@
 'use strict';
-const util = require('util');
 const axios = require("axios");
+const { performance } = require("perf_hooks");
 
 exports.logExecuteData = [];
 const logData = (req) => { // Log data from the request and put it in an array accessible to the main app.
@@ -23,23 +23,6 @@ const logData = (req) => { // Log data from the request and put it in an array a
         secure: req.secure,
         originalUrl: req.originalUrl
     });
-    /* console.log("body: " + util.inspect(req.body));
-    console.log("headers: " + req.headers);
-    console.log("trailers: " + req.trailers);
-    console.log("method: " + req.method);
-    console.log("url: " + req.url);
-    console.log("params: " + util.inspect(req.params));
-    console.log("query: " + util.inspect(req.query));
-    console.log("route: " + req.route);
-    console.log("cookies: " + req.cookies);
-    console.log("ip: " + req.ip);
-    console.log("path: " + req.path);
-    console.log("host: " + req.host);
-    console.log("fresh: " + req.fresh);
-    console.log("stale: " + req.stale);
-    console.log("protocol: " + req.protocol);
-    console.log("secure: " + req.secure);
-    console.log("originalUrl: " + req.originalUrl); */
 }
 
 const JWT = (body, secret, cb) => {
@@ -52,26 +35,24 @@ const JWT = (body, secret, cb) => {
 };
 
 exports.execute = function (req, res) {
-    // console.log(JSON.stringify(req.headers));
     JWT(req.body, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
             console.error(err);
             return res.status(401).end();
         }
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            // console.log('##### decoded ####=>', decoded);
             const { BROKER_SMS_API_URL, BROKER_USER_KEY } = process.env;
             const requestBody = { sender: 'Claro', urgente: 0, validar: 0 };
             for (const argument of decoded.inArguments) {
                 if (argument.mensajeTraducido) requestBody.mensaje = argument.mensajeTraducido;
-                else if (argument.Cellular_number) requestBody.bill_number = argument.Cellular_number;
-                else if (argument.Remitente) requestBody.source = argument.Remitente;
+                else if (argument.cellularNumber) requestBody.bill_number = argument.cellularNumber;
+                else if (argument.remitente) requestBody.source = argument.remitente;
                 if (requestBody.bill_number && requestBody.mensaje && requestBody.source) break;
             }
 
-            /* console.log('Sending message...\nBody:');
-            console.log(JSON.stringify(requestBody)); */
-            let messageSendingFailed = false;
+            specialConsoleLog(requestBody.bill_number, 'BROKER_CA_INPUT', {}, decoded);
+
+            const brokerRequestDurationTimestamps = { start: performance.now(), end: null };
             const messageSendingResponse = await axios.post(
                 `${BROKER_SMS_API_URL}/online_loader/notificacion/cargarnotificacionDn/sms/`,
                 requestBody,
@@ -81,21 +62,30 @@ exports.execute = function (req, res) {
                     }
                 }
             )
-                .then((res) => {
-                    /* console.log('Response:');
-                    console.log(res.data); */
-                    return res.data;
-                })
                 .catch((error) => {
+                    brokerRequestDurationTimestamps.end = performance.now();
+                    if (error.response) {
+                        const { data, status } = error.response;
+                        specialConsoleLog(requestBody.bill_number, 'BROKER_REQUEST_FAILED', brokerRequestDurationTimestamps, { data, status });
+                    }
                     const { response: { status, data } } = error;
                     console.log('Error:');
                     console.log(`Status: ${status}`);
                     console.log(`Data: ${JSON.stringify(data)}`);
-                    messageSendingFailed = true;
                 });
-            res.send(200, {
-                BrokerStatus: messageSendingFailed ? false : (messageSendingResponse ? true : false),
-            });
+            brokerRequestDurationTimestamps.end = performance.now();
+
+            let messageSendingFailed = !messageSendingResponse ? true : false;
+
+            if (!messageSendingFailed && messageSendingResponse.data) {
+                specialConsoleLog(requestBody.bill_number, 'BROKER_RESPONSE', brokerRequestDurationTimestamps, messageSendingResponse.data);
+            }
+
+            const output = { brokerStatus: messageSendingFailed ? false : (messageSendingResponse.data ? true : false) };
+
+            specialConsoleLog(requestBody.bill_number, 'BROKER_CA_OUTPUT', {}, output);
+
+            res.send(200, output);
         } else {
             console.error('inArguments invalid.');
             return res.status(400).end();
@@ -127,3 +117,23 @@ exports.stop = (req, res) => {
     logData(req);
     res.send(200, 'Stop');
 };
+
+function millisToMinutesAndSeconds(millis) {
+    const minutes = Math.floor(millis / 60000);
+    const seconds = ((millis % 60000) / 1000).toFixed(0);
+    return Number(seconds) == 60 ? minutes + 1 + 'm' : minutes + 'm ' + (Number(seconds) < 10 ? '0' : '') + seconds + 's';
+}
+
+function specialConsoleLog (phoneNumber, eventName, durationTimestamps, data) {
+    const now = new Date();
+    const todayDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    const currentTime = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+    
+    const { start, end } = durationTimestamps;
+    let duration = '-';
+    if (start && end) duration = millisToMinutesAndSeconds(end - start);
+
+    const jsonifiedData = JSON.stringify(data);
+
+    console.log(`${todayDate}|${currentTime}|${phoneNumber}|${eventName}|${duration}|${jsonifiedData}`);
+}
