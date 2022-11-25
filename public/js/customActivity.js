@@ -39,13 +39,13 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('requestedInteraction', (payload) => {
-        console.log("-------- requestedInteraction --------");
+        /* console.log("-------- requestedInteraction --------");
         console.log("AAAAAAAAAAAAAAAAAAA", activity.arguments.execute.inArguments[0]);
-        console.log("BBBBBBBBBBBBBBBBBBB", payload);
+        console.log("BBBBBBBBBBBBBBBBBBB", payload); */
 
         let caMode = getCaMode();
 
-        console.log('CCCCCCCCCCCCCCCCCCC', caMode);
+        // console.log('CCCCCCCCCCCCCCCCCCC', caMode);
 
         if (caMode === 'dependent') {
             let selectedValue;
