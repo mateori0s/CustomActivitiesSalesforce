@@ -45,7 +45,7 @@ define(['postmonger'], (Postmonger) => {
 
         let caMode = getCaMode();
 
-        console.log('CCCCCCCCCCCCCCCCCCC', );
+        console.log('CCCCCCCCCCCCCCCCCCC', caMode);
 
         if (caMode === 'dependent') {
             let selectedValue;
