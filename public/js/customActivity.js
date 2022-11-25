@@ -55,8 +55,9 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('requestedInteraction', (payload) => {
-        /* console.log("-------- requestedInteraction --------");
-        console.log("inArguments --> ", activity.arguments.execute.inArguments[0]); */
+        console.log("-------- requestedInteraction --------");
+        console.log("inArguments --> ", activity.arguments.execute.inArguments[0]);
+        console.log("payload --> ", payload);
 
         let caMode = getCaMode();
 
