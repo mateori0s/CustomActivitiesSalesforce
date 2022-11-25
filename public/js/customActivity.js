@@ -1,25 +1,9 @@
-function setIndependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "none";
-    document.getElementById("independentModeOptionsDiv").style.display = "block";
-}
-
-function setDependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "block";
-    document.getElementById("independentModeOptionsDiv").style.display = "none";
-}
-
-function getCaMode() {
-    let caMode;
-    for (const mode of ['independent', 'dependent']) {
-        if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
-    }
-    return caMode;
-}
+let connection;
 
 define(['postmonger'], (Postmonger) => {
     'use strict';
 
-    let connection = new Postmonger.Session();
+    connection = new Postmonger.Session();
     let activity;
 
     // Configuration variables
@@ -56,10 +40,12 @@ define(['postmonger'], (Postmonger) => {
 
     connection.on('requestedInteraction', (payload) => {
         console.log("-------- requestedInteraction --------");
-        console.log("inArguments --> ", activity.arguments.execute.inArguments[0]);
-        console.log("payload --> ", payload);
+        console.log("AAAAAAAAAAAAAAAAAAA", activity.arguments.execute.inArguments[0]);
+        console.log("BBBBBBBBBBBBBBBBBBB", payload);
 
         let caMode = getCaMode();
+
+        console.log('CCCCCCCCCCCCCCCCCCC', );
 
         if (caMode === 'dependent') {
             let selectedValue;
@@ -142,3 +128,23 @@ define(['postmonger'], (Postmonger) => {
         if (eventDefinitionModel) eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
     });
 });
+
+function setIndependentMode() {
+    document.getElementById("dependentModeOptionsDiv").style.display = "none";
+    document.getElementById("independentModeOptionsDiv").style.display = "block";
+    connection.trigger("requestInteraction");
+}
+
+function setDependentMode() {
+    document.getElementById("dependentModeOptionsDiv").style.display = "block";
+    document.getElementById("independentModeOptionsDiv").style.display = "none";
+    connection.trigger("requestInteraction");
+}
+
+function getCaMode() {
+    let caMode;
+    for (const mode of ['independent', 'dependent']) {
+        if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
+    }
+    return caMode;
+}
