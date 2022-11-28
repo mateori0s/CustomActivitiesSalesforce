@@ -38,6 +38,14 @@ define(['postmonger'], (Postmonger) => {
             if (caModeArg.caMode === 'independent') setIndependentMode();
             else if (caModeArg.caMode === 'dependent') setDependentMode();
         }
+
+        let caMode = getCaMode();
+        if (caMode === 'independent') {
+            const mensajeTraducidoArg = inArguments.find(arg => arg.mensajeTraducido);
+            if (mensajeTraducidoArg) {
+                document.getElementById('mensajeIndependiente').value = mensajeTraducidoArg.mensajeTraducido;
+            }
+        }
     });
 
     connection.on('requestedInteraction', (payload) => {
