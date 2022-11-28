@@ -32,8 +32,8 @@ exports.configJson = async (req, res) => {
 	const { ENVIRONMENT, APPLICATION_EXTENSION_KEY, THIS_SERVER_BASE_URL, APIGEE_USER_KEY } = process.env;
 	let nameEnvironmentLabel = '';
 	switch (ENVIRONMENT) {
-		case 'heroku':
-			nameEnvironmentLabel = ' - HEROKU DESA';
+		case 'local':
+			nameEnvironmentLabel = ' - LOCAL';
 			break;
 		case 'desa':
 			nameEnvironmentLabel = ' - DESA';
