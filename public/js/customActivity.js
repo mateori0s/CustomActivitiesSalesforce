@@ -35,6 +35,8 @@ define(['postmonger'], (Postmonger) => {
         const caModeArg = inArguments.find(arg => arg.caMode);
         if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
             document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
+            if (caModeArg.caMode === 'independent') setIndependentMode();
+            else if (caModeArg.caMode === 'dependent') setDependentMode();
         }
     });
 
