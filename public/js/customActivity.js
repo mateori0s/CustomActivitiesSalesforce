@@ -32,6 +32,9 @@ define(['postmonger'], (Postmonger) => {
 
         if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
 
+        const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
+        if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
+
         const caModeArg = inArguments.find(arg => arg.caMode);
         if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
             document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
@@ -118,11 +121,14 @@ define(['postmonger'], (Postmonger) => {
             mensajeTraducido = document.getElementById("mensajeIndependiente").value;
         }
 
+        const dataExtension = document.getElementById('dataExtension').value;
+
         activity['arguments'].execute.inArguments = [
             { remitente: document.getElementById('remitente').value },
             { mensajeTraducido },
-            { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
+            { cellularNumber: `{{Contact.Attribute."${dataExtension}".cellular_number}}` },
             { caMode },
+            { dataExtension },
         ];
 
         activity['metaData'].isConfigured = true;
