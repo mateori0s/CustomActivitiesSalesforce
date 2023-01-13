@@ -1,11 +1,11 @@
 'use strict';
-const express = require('express');
-const bodyParser = require('body-parser');
-const errorhandler = require('errorhandler');
-const http = require('http');
-const path = require('path');
-const routes = require('./routes');
-const activity = require('./routes/activity');
+import express from 'express';
+import bodyParser from 'body-parser';
+import errorhandler from 'errorhandler';
+import http from 'http';
+import path from 'path';
+import routes from './routes';
+import activity from './routes/activity';
 
 const app = express();
 
@@ -13,7 +13,7 @@ const app = express();
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.raw({type: 'application/jwt'}));
 app.get('/config.json', routes.configJson);
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

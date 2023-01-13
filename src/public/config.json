@@ -19,8 +19,7 @@
                 { "mensajeTraducido": "" },
                 { "remitente": "" },
                 { "cellularNumber": "" },
-                { "caMode": "" },
-                { "dataExtension": "" }
+                { "caMode": "" }
             ],
             "outArguments": [
                 { "brokerStatus": false }
@@ -92,11 +91,6 @@
                             "direction": "in"
                         },
                         "caMode": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "dataExtension": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
