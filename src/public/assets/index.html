@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Envío de SMS</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie-edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel='stylesheet' href="css/styles.css">
+        <script type="text/javascript" src="js/customActivity.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript">
+            (function() {
+                var config = {
+                    baseUrl: 'js'
+                };
+                var dependencies = [
+                    'customActivity'
+                ];
+                require(config, dependencies);
+            })();
+        </script>
+    </head>
+    <body>
+        <div class="main-block">
+            <h3>Envío de SMS</h3>
+            <span class="description-span">Envía un SMS a un número de celular.</span>
+            <form action="/">
+                <hr>
+                <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
+                <input type="text" name="remitente" id="remitente" placeholder="Remitente" required="" class="text-input">
+                <hr>
+                <div class="switch-field">
+                    <input type="radio" id="mode-independent" name="mode" value="independent" checked onclick="setIndependentMode()"/>
+                    <label for="mode-independent">Independiente</label>
+                    <input type="radio" id="mode-dependent" name="mode" value="dependent" onclick="setDependentMode()"/>
+                    <label for="mode-dependent">Dependiente</label>
+                </div>
+                <br />
+                <hr>
+                <div id="dependentModeOptionsDiv" style="display: none;">
+                    <br>
+                    <label for="messageActivity">Seleccione la Custom Activity con el MensajeTraducido</label>
+                    <br />
+                    <div class="btn-block">
+                        <select
+                            id="messageActivity"
+                            name="messageActivity"
+                            class="slds-select"
+                        >
+                        </select>
+                    </div>
+                </div>
+                <div id="independentModeOptionsDiv">
+                    <label id="icon" for="mensajeIndependiente"><i class="fa-solid fa-comment-sms"></i></label>
+                    <input type="text" name="mensajeIndependiente" id="mensajeIndependiente" placeholder="Mensaje" required="" class="text-input">
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

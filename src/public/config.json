@@ -1,0 +1,110 @@
+{
+    "workflowApiVersion": "1.1",
+    "metaData": {
+        "icon": "images/icon.png",
+        "iconSmall": "images/iconSmall.png",
+        "category": "custom"
+    },
+    "type": "REST",
+    "lang": {
+        "en-US": {
+            "name": "DINAMICALLY_REPLACED",
+            "description": "Envía un SMS a un número de celular.",
+            "step1Label": "Configure Activity"
+        }
+    },
+    "arguments": {
+        "execute": {
+            "inArguments": [
+                { "mensajeTraducido": "" },
+                { "remitente": "" },
+                { "cellularNumber": "" },
+                { "caMode": "" }
+            ],
+            "outArguments": [
+                { "brokerStatus": false }
+            ],
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
+            "verb": "POST",
+            "body": "",
+            "header": "",
+            "format": "json",
+            "useJwt": true,
+            "timeout": 10000,
+            "retryCount": 3,
+			"retryDelay": 10000
+        }
+    },
+    "configurationArguments": {
+        "applicationExtensionKey": "DINAMICALLY_REPLACED",
+        "save": {
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "publish": {
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "stop": {
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "validate": {
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
+            "verb": "POST",
+            "useJwt": true
+        }
+    },
+    "userInterfaces": {
+        "configModal": {
+            "height": 450,
+            "width": 500,
+            "fullscreen": false
+        }
+    },
+    "schema": {
+        "arguments":{
+            "execute": {
+                "inArguments": [
+                    {
+                        "mensajeTraducido": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "remitente": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "cellularNumber": {
+                            "dataType": "Phone",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "caMode": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        }
+                    }
+                ],
+                "outArguments": [{
+                    "brokerStatus": {
+                        "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    }
+                }]
+            }
+        }
+    }
+}
