@@ -9,7 +9,7 @@
     "lang": {
         "en-US": {
             "name": "DINAMICALLY_REPLACED",
-            "description": "Envía un SMS a un número de celular.",
+            "description": "Presta",
             "step1Label": "Configure Activity"
         }
     },
