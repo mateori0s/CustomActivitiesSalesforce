@@ -6,12 +6,12 @@ module.exports = {
    entry: './src/public/js/customActivity.js',
    output: {
      filename: 'customActivity.js',
-     path: path.resolve(__dirname, 'dist', 'public', 'js'),
    },
    plugins: [
     new CopyPlugin({
       patterns: [
         { from: "src/public/assets", to: path.resolve(__dirname, 'dist', 'public') },
+        { from: "src/public/js", to: path.resolve(__dirname, 'dist', 'public', 'js') },
       ],
     }),
   ],
