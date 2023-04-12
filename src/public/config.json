@@ -16,13 +16,11 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "mensajeTraducido": "" },
-                { "remitente": "" },
-                { "cellularNumber": "" },
-                { "caMode": "" }
+                { "cellularNumber": "" }
             ],
             "outArguments": [
-                { "brokerStatus": false }
+                { "brokerStatus": false },
+                {"qualificationResult":""}
             ],
             "url": "DINAMICALLY_REPLACED",
             "headers": "DINAMICALLY_REPLACED",
@@ -75,16 +73,6 @@
             "execute": {
                 "inArguments": [
                     {
-                        "mensajeTraducido": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "remitente": {
-                            "dataType": "Text",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
                         "cellularNumber": {
                             "dataType": "Phone",
                             "isNullable": false,
@@ -100,6 +88,11 @@
                 "outArguments": [{
                     "brokerStatus": {
                         "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "qualificationResult": {
+                        "dataType":"Text",
                         "direction": "out",
                         "access": "visible"
                     }
