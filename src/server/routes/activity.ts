@@ -98,8 +98,15 @@ const execute = async function (req: Request, res: Response) {
                     !requestBody.source
                 ) return res.status(400).send(`Input parameter is missing.`);
 
-                const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY } } = process;
+                const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY, PRESTA_API_URL } } = process;
+
                 const brokerRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
+                const prestaVerificationResponse = await axios.post(
+                    `${PRESTA_API_URL}/serviceQualificationManagement/v3/servicequalification`,
+                    {
+                        propiedad_prueba: "[TEST]-4f4bb8f57e0b"
+                    },
+                )
                 const messageSendingResponse = await axios.post(
                     `${BROKER_SMS_API_URL}/online_loader/notificacion/cargarnotificacionDn/sms/`,
                     requestBody,
@@ -134,10 +141,10 @@ const execute = async function (req: Request, res: Response) {
                     );
                 }
 
-                // const output = {
-                //     brokerStatus: messageSendingFailed ? false :
-                //         (messageSendingResponse && messageSendingResponse.data ? true : false)
-                // };
+                 const output = {
+                     brokerStatus: messageSendingFailed ? false :
+                         (messageSendingResponse && messageSendingResponse.data ? true : false)
+                 };
 
                 specialConsoleLog(requestBody.bill_number, 'BROKER_CA_OUTPUT', { start: null, end: null }, output);
 
