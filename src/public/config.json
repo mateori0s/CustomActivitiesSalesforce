@@ -19,7 +19,7 @@
                 { "cellularNumber": "" }
             ],
             "outArguments": [
-                {"qualificationResult":""}
+                { "qualificationResult": "" }
             ],
             "url": "DINAMICALLY_REPLACED",
             "headers": "DINAMICALLY_REPLACED",
@@ -74,11 +74,6 @@
                     {
                         "cellularNumber": {
                             "dataType": "Phone",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "caMode": {
-                            "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         }
