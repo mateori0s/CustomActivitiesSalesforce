@@ -19,7 +19,6 @@
                 { "cellularNumber": "" }
             ],
             "outArguments": [
-                { "brokerStatus": false },
                 {"qualificationResult":""}
             ],
             "url": "DINAMICALLY_REPLACED",
@@ -86,11 +85,6 @@
                     }
                 ],
                 "outArguments": [{
-                    "brokerStatus": {
-                        "dataType": "Boolean",
-                        "direction": "out",
-                        "access": "visible"
-                    },
                     "qualificationResult": {
                         "dataType":"Text",
                         "direction": "out",

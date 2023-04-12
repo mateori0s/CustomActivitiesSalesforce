@@ -28,24 +28,24 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const remitenteArg = inArguments.find(arg => arg.remitente);
+        // const remitenteArg = inArguments.find(arg => arg.remitente);
 
-        if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
+        // if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
 
-        const caModeArg = inArguments.find(arg => arg.caMode);
-        if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
-            document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
-            if (caModeArg.caMode === 'independent') setIndependentMode();
-            else if (caModeArg.caMode === 'dependent') setDependentMode();
-        }
+        // const caModeArg = inArguments.find(arg => arg.caMode);
+        // if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
+        //     document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
+        //     if (caModeArg.caMode === 'independent') setIndependentMode();
+        //     else if (caModeArg.caMode === 'dependent') setDependentMode();
+        // }
 
-        let caMode = getCaMode();
-        if (caMode === 'independent') {
-            const mensajeTraducidoArg = inArguments.find(arg => arg.mensajeTraducido);
-            if (mensajeTraducidoArg) {
-                document.getElementById('mensajeIndependiente').value = mensajeTraducidoArg.mensajeTraducido;
-            }
-        }
+        // let caMode = getCaMode();
+        // if (caMode === 'independent') {
+        //     const mensajeTraducidoArg = inArguments.find(arg => arg.mensajeTraducido);
+        //     if (mensajeTraducidoArg) {
+        //         document.getElementById('mensajeIndependiente').value = mensajeTraducidoArg.mensajeTraducido;
+        //     }
+        // }
     });
 
     connection.on('requestedInteraction', (payload) => {
@@ -72,8 +72,7 @@ define(['postmonger'], (Postmonger) => {
                 if (existingSelection && existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
             }
 
-            // Populate the select dropdown.
-            const selectElement = document.getElementById("messageActivity");
+            // const selectElement = document.getElementById("messageActivity");
 
             payload.activities.forEach((a) => {
                 if (
@@ -82,15 +81,17 @@ define(['postmonger'], (Postmonger) => {
                     a.schema.arguments.execute &&
                     a.schema.arguments.execute.outArguments &&
                     a.schema.arguments.execute.outArguments.length > 0
-                ) {
-                    a.schema.arguments.execute.outArguments.forEach((inArg) => {
-                        if (inArg.mensajeTraducido) {
-                        let option = document.createElement("option");
-                        option.text = `${a.name} - (${a.key})`;
-                        option.value = a.key;
-                        selectElement.add(option);
-                        }
-                    });
+                ) 
+                
+                {
+                    // a.schema.arguments.execute.outArguments.forEach((inArg) => {
+                    //     if (inArg.mensajeTraducido) {
+                    //     let option = document.createElement("option");
+                    //     option.text = `${a.name} - (${a.key})`;
+                    //     option.value = a.key;
+                    //     selectElement.add(option);
+                    //     }
+                    // });
                 }
             });
 
@@ -109,24 +110,23 @@ define(['postmonger'], (Postmonger) => {
 
     connection.on('clickedNext', () => { // Save function within MC.
         let caMode = getCaMode();
-
-        let mensajeTraducido;
-        if (caMode === 'dependent') {
-            const select = document.getElementById("messageActivity");
-            mensajeTraducido = `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}`;
-        } else if (caMode === 'independent') {
-            mensajeTraducido = document.getElementById("mensajeIndependiente").value;
-        }
-
-        activity['arguments'].execute.inArguments = [
-            { remitente: document.getElementById('remitente').value },
-            { mensajeTraducido },
+        // let mensajeTraducido;
+        // if (caMode === 'dependent') {
+        //     const select = document.getElementById("messageActivity");
+        //     mensajeTraducido = `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}`;
+        // } else if (caMode === 'independent') {
+        //     mensajeTraducido = document.getElementById("mensajeIndependiente").value;
+        // }
+        
+        payload['arguments'].execute.inArguments = [
             { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
             { caMode },
         ];
+        payload['metaData'].isConfigured = true;
+        connection.trigger('updateActivity',payload);
 
-        activity['metaData'].isConfigured = true;
-        connection.trigger('updateActivity', activity);
+        // activity['metaData'].isConfigured = true;
+        // connection.trigger('updateActivity', activity);
     });
 
     /**
@@ -139,22 +139,10 @@ define(['postmonger'], (Postmonger) => {
     });
 });
 
-function setIndependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "none";
-    document.getElementById("independentModeOptionsDiv").style.display = "block";
-    connection.trigger("requestInteraction");
-}
-
-function setDependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "block";
-    document.getElementById("independentModeOptionsDiv").style.display = "none";
-    connection.trigger("requestInteraction");
-}
-
 function getCaMode() {
     let caMode;
-    for (const mode of ['independent', 'dependent']) {
-        if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
-    }
+    // for (const mode of ['independent', 'dependent']) {
+    //     if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
+    // }
     return caMode;
 }

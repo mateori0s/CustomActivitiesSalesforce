@@ -52,14 +52,11 @@ interface RequestBody {
     sender: string;
     urgente: 0 | 1;
     validar: 0 | 1;
-    mensaje: string;
     bill_number: string;
     source: string;
 }
 interface InputParamenter {
-    mensajeTraducido?: string;
     cellularNumber?: string;
-    remitente?: string;
     bill_number?: string;
 }
 interface DecodedBody {
@@ -105,7 +102,7 @@ const execute = async function (req: Request, res: Response) {
                     !requestBody.bill_number ||
                     !requestBody.source
                 ) return res.status(400).send(`Input parameter is missing.`);
-    
+
                 const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY } } = process;
                 const brokerRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
                 const messageSendingResponse = await axios.post(
@@ -141,14 +138,14 @@ const execute = async function (req: Request, res: Response) {
                         messageSendingResponse.data
                     );
                 }
-    
-                const output = {
-                    brokerStatus: messageSendingFailed ? false :
-                        (messageSendingResponse && messageSendingResponse.data ? true : false)
-                };
-    
+
+                // const output = {
+                //     brokerStatus: messageSendingFailed ? false :
+                //         (messageSendingResponse && messageSendingResponse.data ? true : false)
+                // };
+
                 specialConsoleLog(requestBody.bill_number, 'BROKER_CA_OUTPUT', { start: null, end: null }, output);
-    
+
                 res.status(200).send(output);
             } else {
                 console.error('inArguments invalid.');
@@ -198,7 +195,7 @@ function specialConsoleLog (
     const now = new Date();
     const todayDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
     const currentTime = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-    
+
     const { start, end } = durationTimestamps;
     let duration = '-';
     if (start && end) duration = millisToMinutesAndSeconds(end - start);
