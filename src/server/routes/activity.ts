@@ -92,13 +92,8 @@ const execute = async function (req: Request, res: Response) {
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
                 const requestBody: Partial<RequestBody> = { sender: 'Claro', urgente: 0, validar: 0 };
                 for (const argument of decoded.inArguments) {
-                    if (argument.mensajeTraducido) requestBody.mensaje = argument.mensajeTraducido;
-                    else if (argument.cellularNumber) requestBody.bill_number = argument.cellularNumber;
-                    else if (argument.remitente) requestBody.source = argument.remitente;
-                    if (requestBody.mensaje && requestBody.bill_number && requestBody.source) break;
                 }
                 if (
-                    !requestBody.mensaje ||
                     !requestBody.bill_number ||
                     !requestBody.source
                 ) return res.status(400).send(`Input parameter is missing.`);
