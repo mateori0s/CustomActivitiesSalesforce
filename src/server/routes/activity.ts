@@ -99,12 +99,26 @@ const execute = async function (req: Request, res: Response) {
                 ) return res.status(400).send(`Input parameter is missing.`);
 
                 const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY, PRESTA_API_URL } } = process;
-
+                       
                 const brokerRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
+        
                 const prestaVerificationResponse = await axios.post(
                     `${PRESTA_API_URL}/serviceQualificationManagement/v3/servicequalification`,
                     {
-                        propiedad_prueba: "[TEST]-4f4bb8f57e0b"
+                        description: "Service Qualification 3513856499",
+                        externalId: "[TEST]-4f4bb8f57e0b",
+                        provideAlternative: true,
+                        provideOnlyAvailable: true,
+                        provideUnavailabilityReason: true,
+                        relatedParty: [{id: "3513856499"}],
+                        serviceQualificationItem: [
+                            {service: [{serviceCharacteristic: 
+                                [{name: "channel",
+                                value: "CPAY"}],
+                                serviceSpecification: 
+                                {id: 0,
+                                name: "PRESTA"}}]}
+                            ]
                     },
                 )
                 const messageSendingResponse = await axios.post(
