@@ -117,72 +117,50 @@ const execute = async function (req: Request, res: Response) {
                 }
                 if (!cellularNumber) return res.status(400).send('Input parameter is missing.');
 
-                const requestBody: RequestBody = {
-                    description: `Service Qualification ${cellularNumber}`,
-                    externalId: `[CLARO-TEST]-${uuid()}`,
-                    provideAlternative: true,
-                    provideOnlyAvailable: true,
-                    provideUnavailabilityReason: true,
-                    relatedParty: [{ id: cellularNumber }],
-                    serviceQualificationItem: [
-                        {
-                            service: [
-                                {
-                                    serviceCharacteristic: [
-                                        {
-                                            name: 'channel',
-                                            value: 'CPAY',
-                                        },
-                                    ],
-                                    serviceSpecification: [
-                                        {
-                                            id: 0,
-                                            name: 'PRESTA',
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    ],
-                };
-
-                const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY, PRESTA_API_URL } } = process;
+                const { env: { PRESTA_API_URL } } = process;
                        
-                const brokerRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
+                const prestaRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
         
                 const prestaVerificationResponse = await axios.post(
                     `${PRESTA_API_URL}/serviceQualificationManagement/v3/servicequalification`,
                     {
-                        description: "Service Qualification 3513856499",
-                        externalId: "[TEST]-4f4bb8f57e0b",
+                        description: `Service Qualification ${cellularNumber}`,
+                        externalId: `[CLARO-TEST]-${uuid()}`,
                         provideAlternative: true,
                         provideOnlyAvailable: true,
                         provideUnavailabilityReason: true,
-                        relatedParty: [{id: "3513856499"}],
+                        relatedParty: [{ id: cellularNumber }],
                         serviceQualificationItem: [
-                            {service: [{serviceCharacteristic: 
-                                [{name: "channel",
-                                value: "CPAY"}],
-                                serviceSpecification: 
-                                {id: 0,
-                                name: "PRESTA"}}]}
-                            ]
+                            {
+                                service: [
+                                    {
+                                        serviceCharacteristic: [
+                                            {
+                                                name: 'channel',
+                                                value: 'CPAY',
+                                            },
+                                        ],
+                                        serviceSpecification: [
+                                            {
+                                                id: 0,
+                                                name: 'PRESTA',
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
                     },
                 )
-                const messageSendingResponse = await axios.post(
-                    `${BROKER_SMS_API_URL}/online_loader/notificacion/cargarnotificacionDn/sms/`,
-                    requestBody,
-                    { headers: { user_key: BROKER_USER_KEY } },
-                )
                     .catch((error) => {
-                        brokerRequestDurationTimestamps.end = performance.now();
+                        prestaRequestDurationTimestamps.end = performance.now();
                         if (error.response) {
                             const { data, status } = error.response;
                             specialConsoleLog(
-                                requestBody.bill_number!,
-                                'BROKER_REQUEST_FAILED',
-                                brokerRequestDurationTimestamps,
-                                { data, status }
+                                cellularNumber,
+                                'PRESTA_REQUEST_FAILED',
+                                prestaRequestDurationTimestamps,
+                                { data, status },
                             );
                         }
                         const { response: { status, data } } = error;
@@ -190,25 +168,23 @@ const execute = async function (req: Request, res: Response) {
                         console.log(`Status: ${status}`);
                         console.log(`Data: ${JSON.stringify(data)}`);
                     });
-                brokerRequestDurationTimestamps.end = performance.now();
+                prestaRequestDurationTimestamps.end = performance.now();
 
-                let messageSendingFailed = !messageSendingResponse ? true : false;
-
-                if (!messageSendingFailed && messageSendingResponse && messageSendingResponse.data) {
+                let prestaQualificationFailed = !prestaVerificationResponse ? true : false;
+                if (!prestaQualificationFailed && prestaVerificationResponse && prestaVerificationResponse.data) {
                     specialConsoleLog(
-                        requestBody.bill_number,
-                        'BROKER_RESPONSE',
-                        brokerRequestDurationTimestamps,
-                        messageSendingResponse.data
+                        cellularNumber,
+                        'PRESTA_RESPONSE',
+                        prestaRequestDurationTimestamps,
+                        prestaVerificationResponse.data
                     );
                 }
 
-                 const output = {
-                     brokerStatus: messageSendingFailed ? false :
-                         (messageSendingResponse && messageSendingResponse.data ? true : false)
-                 };
+                prestaVerificationResponse.data
 
-                specialConsoleLog(requestBody.bill_number, 'BROKER_CA_OUTPUT', { start: null, end: null }, output);
+                const output = { qualificationResult: '' };
+
+                specialConsoleLog(cellularNumber, 'PRESTA_CA_OUTPUT', { start: null, end: null }, output);
 
                 res.status(200).send(output);
             } else {
