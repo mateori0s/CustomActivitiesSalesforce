@@ -2,6 +2,7 @@
 import { Request, Response } from "express";
 import { performance } from "perf_hooks";
 import { verify } from 'jsonwebtoken';
+import uuid from 'uuid-random';
 
 interface ExecuteLog {
     body: any;
@@ -49,15 +50,34 @@ const util = require('util');
 
 import axios from 'axios';
 interface RequestBody {
-    sender: string;
-    urgente: 0 | 1;
-    validar: 0 | 1;
-    bill_number: string;
-    source: string;
+    description: string;
+    externalId: string;
+    provideAlternative: boolean;
+    provideOnlyAvailable: boolean;
+    provideUnavailabilityReason: boolean;
+    relatedParty: RelatedParty[];
+    serviceQualificationItem: ServiceQualificationItem[];
+}
+interface RelatedParty {
+    id: string;
+}
+interface ServiceQualificationItem {
+    service: Service[];
+}
+interface Service {
+    serviceCharacteristic: ServiceCharacteristic[];
+    serviceSpecification: ServiceSpecification[];
+}
+interface ServiceCharacteristic {
+    name: string;
+    value: string;
+}
+interface ServiceSpecification {
+    id: number;
+    name: string;
 }
 interface InputParamenter {
     cellularNumber?: string;
-    bill_number?: string;
 }
 interface DecodedBody {
     inArguments?: InputParamenter[];
@@ -90,13 +110,41 @@ const execute = async function (req: Request, res: Response) {
                 return res.status(401).end();
             }
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-                const requestBody: Partial<RequestBody> = { sender: 'Claro', urgente: 0, validar: 0 };
+
+                let cellularNumber: string | null = null;
                 for (const argument of decoded.inArguments) {
+                    if (argument.cellularNumber) cellularNumber = argument.cellularNumber;
                 }
-                if (
-                    !requestBody.bill_number ||
-                    !requestBody.source
-                ) return res.status(400).send(`Input parameter is missing.`);
+                if (!cellularNumber) return res.status(400).send('Input parameter is missing.');
+
+                const requestBody: RequestBody = {
+                    description: `Service Qualification ${cellularNumber}`,
+                    externalId: `[CLARO-TEST]-${uuid()}`,
+                    provideAlternative: true,
+                    provideOnlyAvailable: true,
+                    provideUnavailabilityReason: true,
+                    relatedParty: [{ id: cellularNumber }],
+                    serviceQualificationItem: [
+                        {
+                            service: [
+                                {
+                                    serviceCharacteristic: [
+                                        {
+                                            name: 'channel',
+                                            value: 'CPAY',
+                                        },
+                                    ],
+                                    serviceSpecification: [
+                                        {
+                                            id: 0,
+                                            name: 'PRESTA',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                };
 
                 const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY, PRESTA_API_URL } } = process;
                        
