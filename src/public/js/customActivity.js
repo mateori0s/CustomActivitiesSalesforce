@@ -46,20 +46,15 @@ define(['postmonger'], (Postmonger) => {
                 document.getElementById('mensajeIndependiente').value = mensajeTraducidoArg.mensajeTraducido;
             }
         }
+
+        const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
+        if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
     });
 
     connection.on('requestedInteraction', (payload) => {
-        /* console.log("-------- requestedInteraction --------");
-        console.log("AAAAAAAAAAAAAAAAAAA", activity.arguments.execute.inArguments[0]);
-        console.log("BBBBBBBBBBBBBBBBBBB", payload); */
-
         let caMode = getCaMode();
-
-        // console.log('CCCCCCCCCCCCCCCCCCC', caMode);
-
         if (caMode === 'dependent') {
             let selectedValue;
-
             // determine the selected item (if there is one)
             if (activity.arguments.execute.inArguments) {
                 let existingSelection;
@@ -71,10 +66,8 @@ define(['postmonger'], (Postmonger) => {
                 }
                 if (existingSelection && existingSelection.split(".").length == 3) selectedValue = existingSelection.split(".")[1];
             }
-
             // Populate the select dropdown.
             const selectElement = document.getElementById("messageActivity");
-
             payload.activities.forEach((a) => {
                 if (
                     a.schema &&
@@ -93,7 +86,6 @@ define(['postmonger'], (Postmonger) => {
                     });
                 }
             });
-
             if (selectElement.childElementCount > 0) {
                 // If we have a previously selected value, repopulate that value.
                 if (selectedValue) {
@@ -118,10 +110,12 @@ define(['postmonger'], (Postmonger) => {
             mensajeTraducido = document.getElementById("mensajeIndependiente").value;
         }
 
+        const dataExtension = document.getElementById('dataExtension').value;
         activity['arguments'].execute.inArguments = [
+            { dataExtension },
             { remitente: document.getElementById('remitente').value },
             { mensajeTraducido },
-            { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
+            { cellularNumber: `{{Contact.Attribute."${dataExtension}".cellular_number}}` },
             { caMode },
         ];
 

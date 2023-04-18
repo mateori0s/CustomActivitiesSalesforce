@@ -16,6 +16,7 @@
     "arguments": {
         "execute": {
             "inArguments": [
+                { "dataExtension": "" },
                 { "mensajeTraducido": "" },
                 { "remitente": "" },
                 { "cellularNumber": "" },
@@ -75,6 +76,11 @@
             "execute": {
                 "inArguments": [
                     {
+                        "dataExtension": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
                         "mensajeTraducido": {
                             "dataType": "Text",
                             "isNullable": false,
