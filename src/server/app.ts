@@ -6,8 +6,11 @@ import http from 'http';
 import path from 'path';
 import routes from './routes';
 import activity from './routes/activity';
+import { User } from "../entity/user.entity"
+import { myDataSource } from "../app-data-source"
 
 const app = express();
+app.use(express.json())
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);
@@ -35,3 +38,16 @@ http.createServer(app).listen(
     console.log('Express server listening on port ' + app.get('port'));
   }
 );
+
+// establish database connection
+myDataSource
+    .initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!")
+    })
+    .catch((err) => {
+        console.error("Error during Data Source initialization:", err)
+    })
+
+app.listen(3000)
+
