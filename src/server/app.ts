@@ -8,9 +8,16 @@ import routes from './routes';
 import activity from './routes/activity';
 import { User } from "../entity/user.entity"
 import { myDataSource } from "../app-data-source"
+import morgan from 'morgan';
+import cors from 'cors';
+
 
 const app = express();
 app.use(express.json())
+app.use(morgan('dev'))
+app.use(cors())
+
+
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);

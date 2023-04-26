@@ -1,6 +1,10 @@
 "use strict";
+import "reflect-metadata"
 import activity from "./activity";
 import configJsonFile from '../../public/config.json';
+import App from "../app";
+import { AppDataSource } from "../../db";
+import { DataSource } from "typeorm";
 
 /*
  * GET home page.
@@ -65,3 +69,16 @@ export default {
 	logout,
 	configJson,
 };
+
+//para probar si se conectó
+async function main () {
+try{
+	await AppDataSource.initialize();
+	console.log("database conected");
+	App.listen(3000);
+} catch (error) {
+	console.error(error)
+}
+}
+
+main();
