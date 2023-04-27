@@ -29,8 +29,12 @@ define(['postmonger'], (Postmonger) => {
         ) ? data.arguments.execute.inArguments : [];
 
         const remitenteArg = inArguments.find(arg => arg.remitente);
-
         if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
+
+        const smsActionArg = inArguments.find(arg => arg.smsAction);
+        if (smsActionArg && smsActionArg.smsAction && ['send', 'save'].includes(smsActionArg.smsAction)) {
+            document.getElementById(`sms-action-${smsActionArg.smsAction}`).checked = true;
+        }
 
         const caModeArg = inArguments.find(arg => arg.caMode);
         if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
@@ -117,6 +121,7 @@ define(['postmonger'], (Postmonger) => {
             { mensajeTraducido },
             { cellularNumber: `{{Contact.Attribute."${dataExtension}".cellular_number}}` },
             { caMode },
+            { smsAction: getSmsAction() },
         ];
 
         activity['metaData'].isConfigured = true;
@@ -132,6 +137,14 @@ define(['postmonger'], (Postmonger) => {
         if (eventDefinitionModel) eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
     });
 });
+
+function getSmsAction() {
+    let smsAction;
+    for (const action of ['send', 'save']) {
+        if (document.getElementById(`sms-action-${action}`).checked) smsAction = action;
+    }
+    return smsAction;
+}
 
 function setIndependentMode() {
     document.getElementById("dependentModeOptionsDiv").style.display = "none";

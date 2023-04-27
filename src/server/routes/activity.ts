@@ -46,6 +46,8 @@ const logData = (req: Request) => {
 }
 
 import axios from 'axios';
+import { dataSource } from "../app-data-source";
+import { Message } from "../entities/message.entity";
 interface RequestBody {
     sender: string;
     urgente: 0 | 1;
@@ -59,6 +61,7 @@ interface InputParamenter {
     cellularNumber?: string;
     remitente?: string;
     bill_number?: string;
+    smsAction?: SmsAction;
 }
 interface DecodedBody {
     inArguments?: InputParamenter[];
@@ -66,6 +69,10 @@ interface DecodedBody {
 interface DurationTimestampsPair {
     start: number | null;
     end: number | null;
+}
+enum SmsAction {
+    SEND = 'send',
+    SAVE = 'save',
 }
 
 const execute = async function (req: Request, res: Response) {
@@ -92,62 +99,79 @@ const execute = async function (req: Request, res: Response) {
             }
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
                 const requestBody: Partial<RequestBody> = { sender: 'Claro', urgente: 1, validar: 0 };
+                let smsAction: SmsAction | null = null;
+                let message: string | null = null;
+                let bill_number: string | null = null;
+                let source: string | null = null;
                 for (const argument of decoded.inArguments) {
-                    if (argument.mensajeTraducido) requestBody.mensaje = argument.mensajeTraducido;
-                    else if (argument.cellularNumber) requestBody.bill_number = argument.cellularNumber;
-                    else if (argument.remitente) requestBody.source = argument.remitente;
-                    if (requestBody.mensaje && requestBody.bill_number && requestBody.source) break;
+                    if (argument.mensajeTraducido) message = argument.mensajeTraducido;
+                    else if (argument.cellularNumber) bill_number = argument.cellularNumber;
+                    else if (argument.remitente) source = argument.remitente;
+                    else if (argument.smsAction) smsAction = argument.smsAction;
+                    if (message && bill_number && source) break;
                 }
                 if (
-                    !requestBody.mensaje ||
-                    !requestBody.bill_number ||
-                    !requestBody.source
+                    !message ||
+                    !bill_number ||
+                    !source
                 ) return res.status(400).send(`Input parameter is missing.`);
+
+                if (smsAction === SmsAction.SEND) {
+                    requestBody.mensaje = message;
+                    requestBody.bill_number = bill_number;
+                    requestBody.source = source;
+                    const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY } } = process;
+                    const brokerRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
+                    const messageSendingResponse = await axios.post(
+                        `${BROKER_SMS_API_URL}/online_loader/notificacion/cargarnotificacionDn/sms/`,
+                        requestBody,
+                        { headers: { user_key: BROKER_USER_KEY } },
+                    )
+                        .catch((error) => {
+                            brokerRequestDurationTimestamps.end = performance.now();
+                            if (error.response) {
+                                const { data, status } = error.response;
+                                specialConsoleLog(
+                                    requestBody.bill_number!,
+                                    'BROKER_REQUEST_FAILED',
+                                    brokerRequestDurationTimestamps,
+                                    { data, status }
+                                );
+                            }
+                            const { response: { status, data } } = error;
+                            console.log('Error:');
+                            console.log(`Status: ${status}`);
+                            console.log(`Data: ${JSON.stringify(data)}`);
+                        });
+                    brokerRequestDurationTimestamps.end = performance.now();
+
+                    let messageSendingFailed = !messageSendingResponse ? true : false;
+
+                    if (!messageSendingFailed && messageSendingResponse && messageSendingResponse.data) {
+                        specialConsoleLog(
+                            bill_number,
+                            'BROKER_RESPONSE',
+                            brokerRequestDurationTimestamps,
+                            messageSendingResponse.data
+                        );
+                    }
+        
+                    const output = {
+                        brokerStatus: messageSendingFailed ? false :
+                            (messageSendingResponse && messageSendingResponse.data ? true : false)
+                    };
+
+                    specialConsoleLog(bill_number, 'BROKER_CA_OUTPUT', { start: null, end: null }, output);
     
-                const { env: { BROKER_SMS_API_URL, BROKER_USER_KEY } } = process;
-                const brokerRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
-                const messageSendingResponse = await axios.post(
-                    `${BROKER_SMS_API_URL}/online_loader/notificacion/cargarnotificacionDn/sms/`,
-                    requestBody,
-                    { headers: { user_key: BROKER_USER_KEY } },
-                )
-                    .catch((error) => {
-                        brokerRequestDurationTimestamps.end = performance.now();
-                        if (error.response) {
-                            const { data, status } = error.response;
-                            specialConsoleLog(
-                                requestBody.bill_number!,
-                                'BROKER_REQUEST_FAILED',
-                                brokerRequestDurationTimestamps,
-                                { data, status }
-                            );
-                        }
-                        const { response: { status, data } } = error;
-                        console.log('Error:');
-                        console.log(`Status: ${status}`);
-                        console.log(`Data: ${JSON.stringify(data)}`);
+                    return res.status(200).send(output);
+                } else if (smsAction === SmsAction.SAVE) {
+                    await dataSource.getRepository(Message).insert({
+                        message,
+                        bill_number,
+                        source,
                     });
-                brokerRequestDurationTimestamps.end = performance.now();
-
-                let messageSendingFailed = !messageSendingResponse ? true : false;
-
-                if (!messageSendingFailed && messageSendingResponse && messageSendingResponse.data) {
-                    specialConsoleLog(
-                        requestBody.bill_number,
-                        'BROKER_RESPONSE',
-                        brokerRequestDurationTimestamps,
-                        messageSendingResponse.data
-                    );
+                    return res.status(200).send({ brokerStatus: true });
                 }
-    
-                const output = {
-                    brokerStatus: messageSendingFailed ? false :
-                        (messageSendingResponse && messageSendingResponse.data ? true : false)
-                };
-    
-                specialConsoleLog(requestBody.bill_number, 'BROKER_CA_OUTPUT', { start: null, end: null }, output);
-    
-                res.status(200).send(output);
             } else {
                 console.error('inArguments invalid.');
                 return res.status(400).end();

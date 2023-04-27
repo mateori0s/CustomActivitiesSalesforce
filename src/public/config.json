@@ -20,6 +20,7 @@
                 { "mensajeTraducido": "" },
                 { "remitente": "" },
                 { "cellularNumber": "" },
+                { "smsAction": "" },
                 { "caMode": "" }
             ],
             "outArguments": [
@@ -93,6 +94,11 @@
                         },
                         "cellularNumber": {
                             "dataType": "Phone",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "smsAction": {
+                            "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         },
