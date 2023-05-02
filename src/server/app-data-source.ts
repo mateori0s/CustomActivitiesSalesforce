@@ -12,5 +12,5 @@ export const dataSource = new DataSource({
   entities: [Message],
   migrations: [],
   subscribers: [],
-  ssl: true,
+  ssl: { rejectUnauthorized: false },
 });
