@@ -125,6 +125,9 @@ const execute = async function (req: Request, res: Response) {
                     !source
                 ) return res.status(400).send(`Input parameter is missing.`);
 
+                console.log('DDDDDDDDDDDDDDDDD');
+                console.log(smsAction);
+
                 if (smsAction === SmsAction.SEND) {
                     requestBody.mensaje = message;
                     requestBody.bill_number = bill_number;
@@ -174,6 +177,12 @@ const execute = async function (req: Request, res: Response) {
     
                     return res.status(200).send(output);
                 } else if (smsAction === SmsAction.SAVE) {
+                    console.log('EEEEEEEEEEEEEEEEEEE');
+                    console.log({
+                        message,
+                        bill_number,
+                        source,
+                    });
                     await dataSource.getRepository(Message).insert({
                         message,
                         bill_number,
