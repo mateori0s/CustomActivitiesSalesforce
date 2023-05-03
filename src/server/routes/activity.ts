@@ -79,6 +79,8 @@ const execute = async function (req: Request, res: Response) {
     const { body } = req;
     const { env: { JWT_SECRET } } = process;
 
+    console.log('AAAAAAAAAAAAAAA');
+
     if (!body) {
         console.error(new Error('invalid jwtdata'));
         return res.status(401).end();
@@ -87,6 +89,9 @@ const execute = async function (req: Request, res: Response) {
         console.error(new Error('jwtSecret not provided'));
         return res.status(401).end();
     }
+
+    console.log('BBBBBBBBBBBBBBBBBBBB');
+    console.log(body);
 
     verify(
         body.toString('utf8'),
@@ -97,6 +102,10 @@ const execute = async function (req: Request, res: Response) {
                 console.error(err);
                 return res.status(401).end();
             }
+
+            console.log('CCCCCCCCCCCCCCCCCCCCC');
+            console.log(decoded);
+
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
                 const requestBody: Partial<RequestBody> = { sender: 'Claro', urgente: 1, validar: 0 };
                 let smsAction: SmsAction | null = null;
