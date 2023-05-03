@@ -117,7 +117,7 @@ const execute = async function (req: Request, res: Response) {
                     else if (argument.cellularNumber) bill_number = argument.cellularNumber;
                     else if (argument.remitente) source = argument.remitente;
                     else if (argument.smsAction) smsAction = argument.smsAction;
-                    if (message && bill_number && source) break;
+                    if (message && bill_number && source && smsAction) break;
                 }
                 if (
                     !message ||
