@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { performance } from "perf_hooks";
 import { verify } from 'jsonwebtoken';
 import uuid from 'uuid-random';
+import https from 'https';
 
 interface ExecuteLog {
     body: any;
@@ -121,6 +122,8 @@ const execute = async function (req: Request, res: Response) {
                        
                 const prestaRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
         
+                let requestErrorHappened = false;
+
                 const prestaVerificationResponse = await axios.post(
                     `${PRESTA_API_URL}/serviceQualificationManagement/v3/servicequalification`,
                     {
@@ -140,19 +143,19 @@ const execute = async function (req: Request, res: Response) {
                                                 value: 'CPAY',
                                             },
                                         ],
-                                        serviceSpecification: [
-                                            {
-                                                id: 0,
-                                                name: 'PRESTA',
-                                            },
-                                        ],
+                                        serviceSpecification: {
+                                            id: 0,
+                                            name: 'PRESTA',
+                                        },
                                     },
                                 ],
                             },
                         ],
                     },
+                    { httpsAgent: new https.Agent({ rejectUnauthorized: false }) },
                 )
                     .catch((error: any) => {
+                        requestErrorHappened = true;
                         prestaRequestDurationTimestamps.end = performance.now();
                         if (error.response) {
                             const { data, status } = error.response;
@@ -162,29 +165,32 @@ const execute = async function (req: Request, res: Response) {
                                 prestaRequestDurationTimestamps,
                                 { data, status },
                             );
-                        }
-                        const { response: { status, data } } = error;
-                        console.log('Error:');
-                        console.log(`Status: ${status}`);
-                        console.log(`Data: ${JSON.stringify(data)}`);
+                            console.log('Error:');
+                            console.log(`Status: ${status}`);
+                            console.log(`Data: ${JSON.stringify(data)}`);
+                        } else console.log(error);
                     });
                 prestaRequestDurationTimestamps.end = performance.now();
 
-                let prestaQualificationFailed = !prestaVerificationResponse ? true : false;
-                if (!prestaQualificationFailed && prestaVerificationResponse && prestaVerificationResponse.data) {
-                    specialConsoleLog(
-                        cellularNumber,
-                        'PRESTA_RESPONSE',
-                        prestaRequestDurationTimestamps,
-                        prestaVerificationResponse.data
-                    );
-                }
+                if (requestErrorHappened) return res.status(500).send('Presta qualification request failed.');
+                if (
+                    typeof(prestaVerificationResponse) === 'undefined' ||
+                    !prestaVerificationResponse.data ||
+                    !prestaVerificationResponse.data.qualificationResult
+                ) return res.status(500).send('No data found in presta qualification response.');
 
-                const output = { qualificationResult: '' };
+                specialConsoleLog(
+                    cellularNumber,
+                    'PRESTA_RESPONSE',
+                    prestaRequestDurationTimestamps,
+                    prestaVerificationResponse.data
+                );
+
+                const output = { qualificationResult: prestaVerificationResponse.data.qualificationResult };
 
                 specialConsoleLog(cellularNumber, 'PRESTA_CA_OUTPUT', { start: null, end: null }, output);
 
-                res.status(200).send(output);
+                return res.status(200).send(output);
             } else {
                 console.error('inArguments invalid.');
                 return res.status(400).end();
