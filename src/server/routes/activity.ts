@@ -157,7 +157,7 @@ const execute = async function (req: Request, res: Response) {
                         if (error.response) {
                             const { data, status } = error.response;
                             specialConsoleLog(
-                                cellularNumber,
+                                cellularNumber!,
                                 'PRESTA_REQUEST_FAILED',
                                 prestaRequestDurationTimestamps,
                                 { data, status },
@@ -179,8 +179,6 @@ const execute = async function (req: Request, res: Response) {
                         prestaVerificationResponse.data
                     );
                 }
-
-                prestaVerificationResponse.data
 
                 const output = { qualificationResult: '' };
 
