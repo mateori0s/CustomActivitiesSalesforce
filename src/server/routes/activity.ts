@@ -4,6 +4,7 @@ import { performance } from "perf_hooks";
 import { verify } from 'jsonwebtoken';
 import uuid from 'uuid-random';
 import https from 'https';
+import axios from 'axios';
 
 interface ExecuteLog {
     body: any;
@@ -47,36 +48,6 @@ const logData = (req: Request) => {
     });
 }
 
-const util = require('util');
-
-import axios from 'axios';
-interface RequestBody {
-    description: string;
-    externalId: string;
-    provideAlternative: boolean;
-    provideOnlyAvailable: boolean;
-    provideUnavailabilityReason: boolean;
-    relatedParty: RelatedParty[];
-    serviceQualificationItem: ServiceQualificationItem[];
-}
-interface RelatedParty {
-    id: string;
-}
-interface ServiceQualificationItem {
-    service: Service[];
-}
-interface Service {
-    serviceCharacteristic: ServiceCharacteristic[];
-    serviceSpecification: ServiceSpecification[];
-}
-interface ServiceCharacteristic {
-    name: string;
-    value: string;
-}
-interface ServiceSpecification {
-    id: number;
-    name: string;
-}
 interface InputParamenter {
     cellularNumber?: string;
 }
@@ -86,6 +57,53 @@ interface DecodedBody {
 interface DurationTimestampsPair {
     start: number | null;
     end: number | null;
+}
+
+interface RequestBody {
+    description: string;
+    externalId: string;
+    provideAlternative: boolean;
+    provideOnlyAvailable: boolean;
+    provideUnavailabilityReason: boolean;
+    relatedParty: { id: string }[];
+    serviceQualificationItem: {
+        service: {
+            serviceCharacteristic: { name: string; value: string; }[];
+            serviceSpecification: { id: number; name: string; };
+        }[];
+    }[];
+}
+
+interface ResponseBody {
+    baseType: string;
+    description: string;
+    effectiveQualificationDate: string;
+    estimatedResponseDate: string;
+    externalId: string;
+    href: string;
+    id: string;
+    provideAlternative: boolean;
+    provideOnlyAvailable: boolean;
+    provideUnavailabilityReason: boolean;
+    qualificationResult: string;
+    relatedParty: { id: string }[];
+    serviceQualificationDate: string;
+    serviceQualificationItem: {
+        expectedServiceAvailablilityDate: string;
+        state: string;
+        qualificationItemResult: string;
+        type: string;
+        eligibilityUnavailabilityReason: { code: string; label: string }[];
+        service: {
+            href: string;
+            id: string;
+            serviceCharacteristic: { name: string; value: string }[];
+            serviceSpecification: { id: string; name: string }[];
+            relatedParty: { id: string; name: string; role: string }[];
+        }[];
+    }[];
+    state: string;
+    type: string;
 }
 
 const execute = async function (req: Request, res: Response) {
@@ -124,7 +142,7 @@ const execute = async function (req: Request, res: Response) {
         
                 let requestErrorHappened = false;
 
-                const prestaVerificationResponse = await axios.post(
+                const prestaVerificationResponse = await axios.post<ResponseBody>(
                     `${PRESTA_API_URL}/serviceQualificationManagement/v3/servicequalification`,
                     {
                         description: `Service Qualification ${cellularNumber}`,
@@ -151,7 +169,7 @@ const execute = async function (req: Request, res: Response) {
                                 ],
                             },
                         ],
-                    },
+                    } as RequestBody,
                     { httpsAgent: new https.Agent({ rejectUnauthorized: false }) },
                 )
                     .catch((error: any) => {
