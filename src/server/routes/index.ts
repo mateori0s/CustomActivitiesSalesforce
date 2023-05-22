@@ -28,7 +28,7 @@ const logout = (req: any, res: any) => {
 };
 
 const configJson = async (req: any, res: any) => {
-	const { ENVIRONMENT, APPLICATION_EXTENSION_KEY, THIS_SERVER_BASE_URL, APIGEE_USER_KEY } = process.env;
+	const { ENVIRONMENT, APPLICATION_EXTENSION_KEY, THIS_SERVER_BASE_URL } = process.env;
 	let nameEnvironmentLabel = '';
 	switch (ENVIRONMENT) {
 		case 'local':
@@ -45,17 +45,11 @@ const configJson = async (req: any, res: any) => {
 	}
 	configJsonFile.lang["en-US"].name = `Consulta de oferta${nameEnvironmentLabel}`;
 	configJsonFile.configurationArguments.applicationExtensionKey = APPLICATION_EXTENSION_KEY || 'NOT_PROVIDED';
-	const apigeeUserKeyHeaderValue = "{\"user_key\":\"" + APIGEE_USER_KEY + "\"}";
 	configJsonFile.arguments.execute.url = `${THIS_SERVER_BASE_URL}/journeybuilder/execute`;
-	configJsonFile.arguments.execute.headers = apigeeUserKeyHeaderValue;
 	configJsonFile.configurationArguments.save.url = `${THIS_SERVER_BASE_URL}/journeybuilder/save`;
-	configJsonFile.configurationArguments.save.headers = apigeeUserKeyHeaderValue;
 	configJsonFile.configurationArguments.publish.url = `${THIS_SERVER_BASE_URL}/journeybuilder/publish`;
-	configJsonFile.configurationArguments.publish.headers = apigeeUserKeyHeaderValue;
 	configJsonFile.configurationArguments.stop.url = `${THIS_SERVER_BASE_URL}/journeybuilder/stop`;
-	configJsonFile.configurationArguments.stop.headers = apigeeUserKeyHeaderValue;
 	configJsonFile.configurationArguments.validate.url = `${THIS_SERVER_BASE_URL}/journeybuilder/validate`;
-	configJsonFile.configurationArguments.validate.headers = apigeeUserKeyHeaderValue;
 	res.json(configJsonFile);
 };
 
