@@ -2,7 +2,6 @@
 import { Request, Response } from "express";
 import { performance } from "perf_hooks";
 import { verify } from 'jsonwebtoken';
-import uuid from 'uuid-random';
 import https from 'https';
 import axios from 'axios';
 
@@ -26,7 +25,7 @@ interface ExecuteLog {
     originalUrl: any;
 }
 const logExecuteData: ExecuteLog[] = [];
-const logData = (req: Request) => {
+const logData = (req: Request) => { // Log data from the request and put it in an array accessible to the main app.
     logExecuteData.push({
         body: req.body,
         headers: req.headers,
@@ -49,7 +48,10 @@ const logData = (req: Request) => {
 }
 
 interface InputParamenter {
+    packsType?: string;
     cellularNumber?: string;
+    packFinal?: string;
+    mensajeVariables?: string;
 }
 interface DecodedBody {
     inArguments?: InputParamenter[];
@@ -60,50 +62,53 @@ interface DurationTimestampsPair {
 }
 
 interface RequestBody {
-    description: string;
-    externalId: string;
-    provideAlternative: boolean;
-    provideOnlyAvailable: boolean;
-    provideUnavailabilityReason: boolean;
-    relatedParty: { id: string }[];
-    serviceQualificationItem: {
-        service: {
-            serviceCharacteristic: { name: string; value: string; }[];
-            serviceSpecification: { id: number; name: string; };
-        }[];
-    }[];
+    billNumber: number;
+    channel: string;
+    services: string[];
 }
 
 interface ResponseBody {
-    baseType: string;
-    description: string;
-    effectiveQualificationDate: string;
-    estimatedResponseDate: string;
-    externalId: string;
-    href: string;
-    id: string;
-    provideAlternative: boolean;
-    provideOnlyAvailable: boolean;
-    provideUnavailabilityReason: boolean;
-    qualificationResult: string;
-    relatedParty: { id: string }[];
-    serviceQualificationDate: string;
-    serviceQualificationItem: {
-        expectedServiceAvailablilityDate: string;
-        state: string;
-        qualificationItemResult: string;
-        type: string;
-        eligibilityUnavailabilityReason: { code: string; label: string }[];
-        service: {
-            href: string;
-            id: string;
-            serviceCharacteristic: { name: string; value: string }[];
-            serviceSpecification: { id: string; name: string }[];
-            relatedParty: { id: string; name: string; role: string }[];
+    responseCode: number;
+    responseMessage: string;
+    client: null;
+    offerServices: {
+        id: string;
+        pendingProvisioning: boolean;
+        offerPacks: {
+            packId: string;
+            order: number;
+            description: string;
+            priceTax: {
+                amount: number;
+                currency: string;
+            };
+            canBePurchased: boolean;
+            detail: {
+                price: {
+                    amount: number;
+                    currency: string;
+                };
+                initialVolume: number;
+                initialUnit: string;
+                volumeThreshold: number;
+                timeThreshold: number;
+                volumeTime: number;
+                type: string;
+                unitsTime: string;
+                isRenewable: boolean;
+            };
+            reasons: {
+                code: string;
+                description: string;
+            }[];
+            paymentsMethods: {
+                method: string;
+                canBePurchased: boolean;
+            }[];
         }[];
+        activePacks: any[];
+        blockingReason: null;
     }[];
-    state: string;
-    type: string;
 }
 
 const execute = async function (req: Request, res: Response) {
@@ -130,85 +135,134 @@ const execute = async function (req: Request, res: Response) {
             }
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
 
+                const { CLARO_OFFERS_API_URL} = process.env;
+
+                let packsType: string | null = null;
                 let cellularNumber: string | null = null;
+                let packFinal: string | null = null;
+                let packMsj: string | null = null;
                 for (const argument of decoded.inArguments) {
-                    if (argument.cellularNumber) cellularNumber = argument.cellularNumber;
+                    if (argument.packsType) packsType = argument.packsType;
+                    else if (argument.cellularNumber) cellularNumber = argument.cellularNumber;
+                    else if (argument.packFinal) packFinal = argument.packFinal;
+                    else if (argument.mensajeVariables) packMsj = argument.mensajeVariables;
+                    if (packsType && cellularNumber && packFinal && packMsj) break;
                 }
-                if (!cellularNumber) return res.status(400).send('Input parameter is missing.');
+                if (!packsType || !cellularNumber || !packFinal || !packMsj) return res.status(400).send('Input parameter is missing.');
 
-                const { env: { PRESTA_API_URL } } = process;
-                       
-                const prestaRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
-        
-                let requestErrorHappened = false;
+                specialConsoleLog(cellularNumber, 'OFFER_CA_INPUT', { start: null, end: null }, decoded);
 
-                const prestaVerificationResponse = await axios.post<ResponseBody>(
-                    `${PRESTA_API_URL}/serviceQualificationManagement/v3/servicequalification`,
-                    {
-                        description: `Service Qualification ${cellularNumber}`,
-                        externalId: `[CLARO-TEST]-${uuid()}`,
-                        provideAlternative: true,
-                        provideOnlyAvailable: true,
-                        provideUnavailabilityReason: true,
-                        relatedParty: [{ id: cellularNumber }],
-                        serviceQualificationItem: [
-                            {
-                                service: [
-                                    {
-                                        serviceCharacteristic: [
-                                            {
-                                                name: 'channel',
-                                                value: 'CPAY',
-                                            },
-                                        ],
-                                        serviceSpecification: {
-                                            id: 0,
-                                            name: 'PRESTA',
-                                        },
-                                    },
-                                ],
-                            },
-                        ],
+                let offersApiChannel: string | null = null;
+                switch (packsType) {
+                    case 'upc':
+                        offersApiChannel = 'PDC';
+                        break;
+                    case 'ms':
+                        offersApiChannel = 'SF';
+                        break;
+                    default:
+                        const errorMessage = `Invalid packs type: ${packsType}`;
+                        console.log(errorMessage);
+                        return res.status(400).end(errorMessage);
+                }
+
+                const offersRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
+                let packsValidationFailed = false;
+                const offersApiResponse: { data: ResponseBody } | null = await axios({
+                    method: 'post',
+                    url: CLARO_OFFERS_API_URL,
+                    data: {
+                        billNumber: Number(cellularNumber),
+                        channel: offersApiChannel,
+                        services: ["GPRS"],
                     } as RequestBody,
-                    { httpsAgent: new https.Agent({ rejectUnauthorized: false }) },
-                )
-                    .catch((error: any) => {
-                        requestErrorHappened = true;
-                        prestaRequestDurationTimestamps.end = performance.now();
-                        if (error.response) {
-                            const { data, status } = error.response;
-                            specialConsoleLog(
-                                cellularNumber!,
-                                'PRESTA_REQUEST_FAILED',
-                                prestaRequestDurationTimestamps,
-                                { data, status },
-                            );
-                            console.log('Error:');
-                            console.log(`Status: ${status}`);
-                            console.log(`Data: ${JSON.stringify(data)}`);
-                        } else console.log(error);
+                    headers: {
+                        Country: 'AR',
+                        'Session-Id': 'SF',
+                    },
+                    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+                })
+                    .catch((err) => {
+                        offersRequestDurationTimestamps.end = performance.now();
+                        if (err.response) {
+                            const { data, status } = err.response;
+                            specialConsoleLog(cellularNumber!, 'OFFERS_REQUEST_FAILED', offersRequestDurationTimestamps, { data, status });
+                        }
+                        console.log('Error when calling the offers API:');
+                        console.log(err);
+                        return null;
                     });
-                prestaRequestDurationTimestamps.end = performance.now();
+                offersRequestDurationTimestamps.end = performance.now();
 
-                if (requestErrorHappened) return res.status(500).send('Presta qualification request failed.');
-                if (
-                    typeof(prestaVerificationResponse) === 'undefined' ||
-                    !prestaVerificationResponse.data ||
-                    !prestaVerificationResponse.data.qualificationResult
-                ) return res.status(500).send('No data found in presta qualification response.');
+                let packFound = null;
+                if (offersApiResponse) {
+                    if (offersApiResponse.data) {
+                        specialConsoleLog(
+                            cellularNumber,
+                            'OFFERS_RESPONSE',
+                            offersRequestDurationTimestamps,
+                            offersApiResponse.data,
+                        );
+                    }
+                    try {
+                        for (const service of offersApiResponse.data.offerServices) {
+                            for (const pack of service.offerPacks) {
+                                if (pack.packId === packFinal && pack.canBePurchased === true) {
+                                    packFound = pack;
+                                    break;
+                                }
+                            }
+                            if (packFound !== null) break;
+                        }
+                    } catch (err) {
+                        console.log(`Error when processing the response data from the offers API:`);
+                        console.log(err);
+                        packsValidationFailed = true;
+                    }
+                } else packsValidationFailed = true;
 
-                specialConsoleLog(
-                    cellularNumber,
-                    'PRESTA_RESPONSE',
-                    prestaRequestDurationTimestamps,
-                    prestaVerificationResponse.data
-                );
+                let messageToSend = '';
 
-                const output = { qualificationResult: prestaVerificationResponse.data.qualificationResult };
+                if (packFound && !packsValidationFailed) {
+                    const { unitsTime, initialVolume, initialUnit, volumeTime } = packFound.detail;
+                    const { description, priceTax } = packFound;
 
-                specialConsoleLog(cellularNumber, 'PRESTA_CA_OUTPUT', { start: null, end: null }, output);
+                    let unitsTimeWord = null;
+                    switch (unitsTime) {
+                        case 'hora':
+                            unitsTimeWord = { singular: 'hora', plural: 'horas' };
+                            break;
+                        case 'dia':
+                            unitsTimeWord = { singular: 'día', plural: 'días' };
+                            break;
+                        case 'mes':
+                            unitsTimeWord = { singular: 'mes', plural: 'meses' };
+                            break;
+                        default:
+                            const errorMessage = `Unexpected error. Invalid 'unitsTime' value: ${unitsTime}`;
+                            console.log(errorMessage);
+                            return res.status(500).end(errorMessage);
+                    }
 
-                return res.status(200).send(output);
+                    const discountValue = getDiscountValueFromPackDescription(description);
+
+                    messageToSend = packMsj
+                        .trim()
+                        .replace('#C#', `${initialVolume}${initialUnit}`)
+                        .replace('#V#', `${volumeTime} ${volumeTime === 1 ? unitsTimeWord.singular : unitsTimeWord.plural}`)
+                        .replace('#P#', String(Math.round((priceTax.amount + Number.EPSILON) * 100) / 100))
+                        .replace('#D#', discountValue !== null ? String(discountValue) : '#D#');
+                }
+
+                const response = {
+                    puedeComprar: packFound === null ? false : true,
+                    mensajeTraducido: messageToSend,
+                    error: packsValidationFailed
+                };
+    
+                specialConsoleLog(cellularNumber, 'OFFER_CA_OUTPUT', { start: null, end: null }, response);
+    
+                return res.status(200).send(response);
             } else {
                 console.error('inArguments invalid.');
                 return res.status(400).end();
@@ -240,6 +294,50 @@ const validate = (req: any, res: any) => {
 const stop = (req: any, res: any) => {
     logData(req);
     res.send(200, 'Stop');
+};
+
+const getDiscountValueFromPackDescription = (packDescription: string) => {
+    let i = packDescription.search('%Descuento');
+    if (i === -1) {
+        const result = Number(
+            packDescription
+                .replace('-', '')
+                .replace('%', ''),
+        );
+        if (result) return result;
+        else {
+            const equalSymbolIndex = packDescription.search('=');
+            if (equalSymbolIndex !== -1) {
+                const discountSection = packDescription.substring(equalSymbolIndex);
+                const minusSymbolIndex = discountSection.search('-');
+                if (minusSymbolIndex === -1) return null;
+                else {
+                    const percentSymbolIndex = discountSection.search('%');
+                    if (percentSymbolIndex === minusSymbolIndex + 3) {
+                        return Number(
+                            discountSection.substring(
+                                minusSymbolIndex + 1,
+                                percentSymbolIndex,
+                            ),
+                        );
+                    } else return null;
+                }
+            } else return null;
+        }
+    }
+    let discountValueCharacters = [];
+    let equalSymbolFound = false;
+    while (!equalSymbolFound) {
+       i -= 1;
+       const character = packDescription[i];
+       if (character !== '=') discountValueCharacters.unshift(character);
+       else equalSymbolFound = true;
+    }
+    let result = '';
+    for (const character of discountValueCharacters) {
+       result += character;
+    }
+    return Number(result);
 };
 
 function millisToMinutesAndSeconds(millis: number): string {

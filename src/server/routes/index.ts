@@ -43,7 +43,7 @@ const configJson = async (req: any, res: any) => {
 		default:
 			break;
 	}
-	configJsonFile.lang["en-US"].name = `Presta${nameEnvironmentLabel}`;
+	configJsonFile.lang["en-US"].name = `Consulta de oferta${nameEnvironmentLabel}`;
 	configJsonFile.configurationArguments.applicationExtensionKey = APPLICATION_EXTENSION_KEY || 'NOT_PROVIDED';
 	const apigeeUserKeyHeaderValue = "{\"user_key\":\"" + APIGEE_USER_KEY + "\"}";
 	configJsonFile.arguments.execute.url = `${THIS_SERVER_BASE_URL}/journeybuilder/execute`;

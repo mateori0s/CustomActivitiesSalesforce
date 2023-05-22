@@ -9,17 +9,22 @@
     "lang": {
         "en-US": {
             "name": "DINAMICALLY_REPLACED",
-            "description": "Presta",
+            "description": "Revisa si un número de celular puede o no comprar un pack.",
             "step1Label": "Configure Activity"
         }
     },
     "arguments": {
         "execute": {
             "inArguments": [
-                { "cellularNumber": "" }
+                { "packsType": "" },
+                { "cellularNumber": "" },
+                { "packFinal": "" },
+                { "mensajeVariables": "" }
             ],
             "outArguments": [
-                { "qualificationResult": "" }
+                { "puedeComprar": false },
+                { "mensajeTraducido": "" },
+                { "error": false }
             ],
             "url": "DINAMICALLY_REPLACED",
             "headers": "DINAMICALLY_REPLACED",
@@ -72,16 +77,41 @@
             "execute": {
                 "inArguments": [
                     {
+                        "packsType": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
                         "cellularNumber": {
-                            "dataType": "Phone",
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "packFinal": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "mensajeVariables": {
+                            "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         }
                     }
                 ],
                 "outArguments": [{
-                    "qualificationResult": {
-                        "dataType":"Text",
+                    "puedeComprar": {
+                        "dataType": "Boolean",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "mensajeTraducido": {
+                        "dataType": "Text",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "error": {
+                        "dataType": "Boolean",
                         "direction": "out",
                         "access": "visible"
                     }

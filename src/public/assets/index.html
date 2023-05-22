@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Presta</title>
+        <title>Consulta de oferta</title>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie-edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,10 +24,17 @@
     </head>
     <body>
         <div class="main-block">
-            <h3>Presta</h3>
-            <span class="description-span">Verifica si la linea puede solicitar un presta.</span>
+            <h3>Consulta de oferta</h3>
+            <span>Revisa si un número de celular puede o no comprar un pack.</span>
             <form action="/">
                 <hr>
+                <div class="switch-field">
+                    <span >Tipo de packs</span>
+                    <input type="radio" id="packs-type-upc" name="packs-type" value="upc" checked/>
+                    <label for="packs-type-upc">UPC</label>
+                    <input type="radio" id="packs-type-ms" name="packs-type" value="ms"/>
+                    <label for="packs-type-ms">MS</label>
+                </div>
             </form>
         </div>
     </body>
