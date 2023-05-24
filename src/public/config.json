@@ -8,7 +8,7 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "CA CDP Claro Saldo - Heroku",
+            "name": "DINAMICALLY_REPLACED",
             "description": "Revisa el saldo de una linea.",
             "step1Label": "Configure Activity"
         }
@@ -19,7 +19,7 @@
                 { "phone": "" }
             ],
             "outArguments": [],
-            "url": "<URL_SERVER>/journeybuilder/execute",
+            "url": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "body": "",
             "header": "",
@@ -29,24 +29,24 @@
         }
     },
     "configurationArguments": {
-        "applicationExtensionKey": "<APPLICATION_EXTENSION_KEY>",
+        "applicationExtensionKey": "DINAMICALLY_REPLACED",
         "save": {
-            "url": "<URL_SERVER>/journeybuilder/save",
+            "url": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "<URL_SERVER>/journeybuilder/publish",
+            "url": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "<URL_SERVER>/journeybuilder/stop",
+            "url": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "<URL_SERVER>/journeybuilder/validate",
+            "url": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         }
