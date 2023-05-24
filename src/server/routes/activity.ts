@@ -123,7 +123,7 @@ const execute = async function (req: Request, res: Response) {
         body.toString('utf8'),
         JWT_SECRET,
         { algorithms: ['HS256'], complete: false },
-        async (err: any, decoded?: DecodedBody) => {
+        async (err: any, decoded?: any) => {
             if (err) {
                 console.error(err);
                 return res.status(401).end();
