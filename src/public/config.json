@@ -20,7 +20,7 @@
                 { "mensaje": "" }
             ],
             "outArguments": [
-                { "brokerStatus": false }
+                { "mensajeOut": "" }
             ],
             "url": "DINAMICALLY_REPLACED",
             "headers": "DINAMICALLY_REPLACED",

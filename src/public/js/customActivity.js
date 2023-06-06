@@ -84,15 +84,8 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('clickedNext', () => { // Save function within MC.
-        let caMode = getCaMode();
-
         let mensaje;
-        if (caMode === 'dependent') {
-            const select = document.getElementById("messageActivity");
-            mensaje = `{{Interaction.${select.options[select.selectedIndex].value}.mensaje}}`;
-        } else if (caMode === 'independent') {
-            mensaje = document.getElementById("mensajeIndependiente").value;
-        }
+        mensaje = document.getElementById("mensajeIndependiente").value;
 
         const dataExtension = document.getElementById('dataExtension').value;
         activity['arguments'].execute.inArguments = [
@@ -122,22 +115,3 @@ function getSmsAction() {
     return smsAction;
 }
 
-function setIndependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "none";
-    document.getElementById("independentModeOptionsDiv").style.display = "block";
-    connection.trigger("requestInteraction");
-}
-
-function setDependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "block";
-    document.getElementById("independentModeOptionsDiv").style.display = "none";
-    connection.trigger("requestInteraction");
-}
-
-function getCaMode() {
-    let caMode;
-    for (const mode of ['independent', 'dependent']) {
-        if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
-    }
-    return caMode;
-}
