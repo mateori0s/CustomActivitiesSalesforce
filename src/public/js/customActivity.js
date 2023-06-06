@@ -45,8 +45,8 @@ define(['postmonger'], (Postmonger) => {
             if (activity.arguments.execute.inArguments) {
                 let existingSelection;
                 for (const inArgument of activity.arguments.execute.inArguments) {
-                    if (inArgument.mensajeTraducido) {
-                        existingSelection = inArgument.mensajeTraducido;
+                    if (inArgument.mensaje) {
+                        existingSelection = inArgument.mensaje;
                         break;
                     }
                 }
@@ -63,7 +63,7 @@ define(['postmonger'], (Postmonger) => {
                     a.schema.arguments.execute.outArguments.length > 0
                 ) {
                     a.schema.arguments.execute.outArguments.forEach((inArg) => {
-                        if (inArg.mensajeTraducido) {
+                        if (inArg.mensaje) {
                         let option = document.createElement("option");
                         option.text = `${a.name} - (${a.key})`;
                         option.value = a.key;
@@ -86,24 +86,20 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('clickedNext', () => { // Save function within MC.
-        let caMode = getCaMode();
+        let caMode = 'independent';
 
-        let mensajeTraducido;
+        let mensaje;
         if (caMode === 'dependent') {
             const select = document.getElementById("messageActivity");
-            mensajeTraducido = `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}`;
+            mensaje = `{{Interaction.${select.options[select.selectedIndex].value}.mensaje}}`;
         } else if (caMode === 'independent') {
-            mensajeTraducido = document.getElementById("mensajeIndependiente").value;
+            mensaje = document.getElementById("mensajeIndependiente").value;
         }
 
         const dataExtension = document.getElementById('dataExtension').value;
         activity['arguments'].execute.inArguments = [
             { dataExtension },
-            { remitente: document.getElementById('remitente').value },
-            { mensajeTraducido },
-            { cellularNumber: `{{Contact.Attribute."${dataExtension}".cellular_number}}` },
-            { caMode },
-            { smsAction: getSmsAction() },
+            { mensaje }
         ];
 
         activity['metaData'].isConfigured = true;

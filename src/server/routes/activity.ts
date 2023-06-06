@@ -55,7 +55,7 @@ interface RequestBody {
     source: string;
 }
 interface InputParamenter {
-    mensajeTraducido?: string;
+    mensaje?: string;
     cellularNumber?: string;
     remitente?: string;
     bill_number?: string;
@@ -111,7 +111,7 @@ const execute = async function (req: Request, res: Response) {
                 let bill_number: string | null = null;
                 let source: string | null = null;
                 for (const argument of decoded.inArguments) {
-                    if (argument.mensajeTraducido) message = argument.mensajeTraducido;
+                    if (argument.mensaje) message = argument.mensaje;
                     else if (argument.cellularNumber) bill_number = argument.cellularNumber;
                     else if (argument.remitente) source = argument.remitente;
                     else if (argument.smsAction) smsAction = argument.smsAction;
