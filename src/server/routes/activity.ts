@@ -167,10 +167,6 @@ const execute = async function (req: Request, res: Response) {
                             messageSendingResponse.data
                         );
                     }
-
-                    const output = {
-                        mensajeOut: "test"
-                    }
         
                     const output = {
                         brokerStatus: messageSendingFailed ? false :

@@ -30,7 +30,7 @@ define(['postmonger'], (Postmonger) => {
 
         const mensajeArg = inArguments.find(arg => arg.mensaje);
             if (mensajeArg) {
-                document.getElementById('mensaje').value = mensajeArg.mensaje;
+                document.getElementById('mensajeIndependiente').value = mensajeArg.mensaje;
             }
         const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
         if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
@@ -84,9 +84,8 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('clickedNext', () => { // Save function within MC.
-        
         let mensaje;
-        mensaje = document.getElementById("mensaje").value;
+        mensaje = document.getElementById("mensajeIndependiente").value;
 
         const dataExtension = document.getElementById('dataExtension').value;
         activity['arguments'].execute.inArguments = [
@@ -108,5 +107,11 @@ define(['postmonger'], (Postmonger) => {
     });
 });
 
-
+function getSmsAction() {
+    let smsAction;
+    for (const action of ['send', 'save']) {
+        if (document.getElementById(`sms-action-${action}`).checked) smsAction = action;
+    }
+    return smsAction;
+}
 
