@@ -46,8 +46,6 @@ const logData = (req: Request) => {
 }
 
 import axios from 'axios';
-import { dataSource } from "../app-data-source";
-import { Message } from "../entities/message.entity";
 interface RequestBody {
     sender: string;
     urgente: 0 | 1;
@@ -179,11 +177,6 @@ const execute = async function (req: Request, res: Response) {
                 } else if (smsAction === SmsAction.SAVE) {
                     console.log('EEEEEEEEEEEEEEEEEEE');
                     console.log({
-                        message,
-                        bill_number,
-                        source,
-                    });
-                    await dataSource.getRepository(Message).insert({
                         message,
                         bill_number,
                         source,

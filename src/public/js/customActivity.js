@@ -28,27 +28,9 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const remitenteArg = inArguments.find(arg => arg.remitente);
-        if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
-
-        const smsActionArg = inArguments.find(arg => arg.smsAction);
-        if (smsActionArg && smsActionArg.smsAction && ['send', 'save'].includes(smsActionArg.smsAction)) {
-            document.getElementById(`sms-action-${smsActionArg.smsAction}`).checked = true;
-        }
-
-        const caModeArg = inArguments.find(arg => arg.caMode);
-        if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
-            document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
-            if (caModeArg.caMode === 'independent') setIndependentMode();
-            else if (caModeArg.caMode === 'dependent') setDependentMode();
-        }
-
-        let caMode = getCaMode();
-        if (caMode === 'independent') {
-            const mensajeTraducidoArg = inArguments.find(arg => arg.mensajeTraducido);
-            if (mensajeTraducidoArg) {
-                document.getElementById('mensajeIndependiente').value = mensajeTraducidoArg.mensajeTraducido;
-            }
+        const mensajeArg = inArguments.find(arg => arg.mensaje);
+        if (mensajeArg) {
+            document.getElementById('mensaje').value = mensajeArg.mensaje;
         }
 
         const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
@@ -137,31 +119,3 @@ define(['postmonger'], (Postmonger) => {
         if (eventDefinitionModel) eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
     });
 });
-
-function getSmsAction() {
-    let smsAction;
-    for (const action of ['send', 'save']) {
-        if (document.getElementById(`sms-action-${action}`).checked) smsAction = action;
-    }
-    return smsAction;
-}
-
-function setIndependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "none";
-    document.getElementById("independentModeOptionsDiv").style.display = "block";
-    connection.trigger("requestInteraction");
-}
-
-function setDependentMode() {
-    document.getElementById("dependentModeOptionsDiv").style.display = "block";
-    document.getElementById("independentModeOptionsDiv").style.display = "none";
-    connection.trigger("requestInteraction");
-}
-
-function getCaMode() {
-    let caMode;
-    for (const mode of ['independent', 'dependent']) {
-        if (document.getElementById(`mode-${mode}`).checked) caMode = mode;
-    }
-    return caMode;
-}

@@ -86,10 +86,10 @@
                     }
                 ],
                 "outArguments": [{
-                    "brokerStatus": {
-                        "dataType": "Boolean",
-                        "direction": "out",
-                        "access": "visible"
+                    "mensajeOut": {
+                        "dataType": "Text",
+                        "isNullable": false,
+                        "direction": "in"
                     }
                 }]
             }
