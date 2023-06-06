@@ -29,9 +29,8 @@ define(['postmonger'], (Postmonger) => {
         ) ? data.arguments.execute.inArguments : [];
 
         const mensajeArg = inArguments.find(arg => arg.mensaje);
-            if (mensajeArg) {
-                document.getElementById('mensajeIndependiente').value = mensajeArg.mensaje;
-            }
+        if (mensajeArg) document.getElementById('mensaje').value = mensajeArg.mensaje;
+        
         const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
         if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
     });
