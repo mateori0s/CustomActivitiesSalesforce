@@ -28,43 +28,23 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const remitenteArg = inArguments.find(arg => arg.remitente);
-        if (remitenteArg) document.getElementById('remitente').value = remitenteArg.remitente;
-
-        const smsActionArg = inArguments.find(arg => arg.smsAction);
-        if (smsActionArg && smsActionArg.smsAction && ['send', 'save'].includes(smsActionArg.smsAction)) {
-            document.getElementById(`sms-action-${smsActionArg.smsAction}`).checked = true;
-        }
-
-        const caModeArg = inArguments.find(arg => arg.caMode);
-        if (caModeArg && caModeArg.caMode && ['independent', 'dependent'].includes(caModeArg.caMode)) {
-            document.getElementById(`mode-${caModeArg.caMode}`).checked = true;
-            if (caModeArg.caMode === 'independent') setIndependentMode();
-            else if (caModeArg.caMode === 'dependent') setDependentMode();
-        }
-
-        let caMode = getCaMode();
-        if (caMode === 'independent') {
-            const mensajeTraducidoArg = inArguments.find(arg => arg.mensajeTraducido);
-            if (mensajeTraducidoArg) {
-                document.getElementById('mensajeIndependiente').value = mensajeTraducidoArg.mensajeTraducido;
+        const mensajeArg = inArguments.find(arg => arg.mensaje);
+            if (mensajeArg) {
+                document.getElementById('mensajeIndependiente').value = mensajeArg.mensaje;
             }
-        }
-
         const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
         if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
     });
 
     connection.on('requestedInteraction', (payload) => {
-        let caMode = getCaMode();
         if (caMode === 'dependent') {
             let selectedValue;
             // determine the selected item (if there is one)
             if (activity.arguments.execute.inArguments) {
                 let existingSelection;
                 for (const inArgument of activity.arguments.execute.inArguments) {
-                    if (inArgument.mensajeTraducido) {
-                        existingSelection = inArgument.mensajeTraducido;
+                    if (inArgument.mensaje) {
+                        existingSelection = inArgument.mensaje;
                         break;
                     }
                 }
@@ -81,7 +61,7 @@ define(['postmonger'], (Postmonger) => {
                     a.schema.arguments.execute.outArguments.length > 0
                 ) {
                     a.schema.arguments.execute.outArguments.forEach((inArg) => {
-                        if (inArg.mensajeTraducido) {
+                        if (inArg.mensaje) {
                         let option = document.createElement("option");
                         option.text = `${a.name} - (${a.key})`;
                         option.value = a.key;
@@ -106,22 +86,18 @@ define(['postmonger'], (Postmonger) => {
     connection.on('clickedNext', () => { // Save function within MC.
         let caMode = getCaMode();
 
-        let mensajeTraducido;
+        let mensaje;
         if (caMode === 'dependent') {
             const select = document.getElementById("messageActivity");
-            mensajeTraducido = `{{Interaction.${select.options[select.selectedIndex].value}.mensajeTraducido}}`;
+            mensaje = `{{Interaction.${select.options[select.selectedIndex].value}.mensaje}}`;
         } else if (caMode === 'independent') {
-            mensajeTraducido = document.getElementById("mensajeIndependiente").value;
+            mensaje = document.getElementById("mensajeIndependiente").value;
         }
 
         const dataExtension = document.getElementById('dataExtension').value;
         activity['arguments'].execute.inArguments = [
             { dataExtension },
-            { remitente: document.getElementById('remitente').value },
-            { mensajeTraducido },
-            { cellularNumber: `{{Contact.Attribute."${dataExtension}".cellular_number}}` },
-            { caMode },
-            { smsAction: getSmsAction() },
+            { mensaje }
         ];
 
         activity['metaData'].isConfigured = true;
