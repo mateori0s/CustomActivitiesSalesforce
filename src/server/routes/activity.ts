@@ -1,9 +1,7 @@
 'use strict';
 import { Request, Response } from "express";
-import { performance } from "perf_hooks";
 import { verify } from 'jsonwebtoken';
-import https from 'https';
-import axios from 'axios';
+
 
 interface ExecuteLog {
     body: any;
@@ -132,49 +130,6 @@ const stop = (req: any, res: any) => {
     res.send(200, 'Stop');
 };
 
-const getDiscountValueFromPackDescription = (packDescription: string) => {
-    let i = packDescription.search('%Descuento');
-    if (i === -1) {
-        const result = Number(
-            packDescription
-                .replace('-', '')
-                .replace('%', ''),
-        );
-        if (result) return result;
-        else {
-            const equalSymbolIndex = packDescription.search('=');
-            if (equalSymbolIndex !== -1) {
-                const discountSection = packDescription.substring(equalSymbolIndex);
-                const minusSymbolIndex = discountSection.search('-');
-                if (minusSymbolIndex === -1) return null;
-                else {
-                    const percentSymbolIndex = discountSection.search('%');
-                    if (percentSymbolIndex === minusSymbolIndex + 3) {
-                        return Number(
-                            discountSection.substring(
-                                minusSymbolIndex + 1,
-                                percentSymbolIndex,
-                            ),
-                        );
-                    } else return null;
-                }
-            } else return null;
-        }
-    }
-    let discountValueCharacters = [];
-    let equalSymbolFound = false;
-    while (!equalSymbolFound) {
-       i -= 1;
-       const character = packDescription[i];
-       if (character !== '=') discountValueCharacters.unshift(character);
-       else equalSymbolFound = true;
-    }
-    let result = '';
-    for (const character of discountValueCharacters) {
-       result += character;
-    }
-    return Number(result);
-};
 
 function millisToMinutesAndSeconds(millis: number): string {
     const minutes = Math.floor(millis / 60000);

@@ -30,7 +30,9 @@ define(['postmonger'], (Postmonger) => {
 
         payload['arguments'].execute.inArguments = [
             { dataExtension: dataExtension },
-            { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
+            // { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
+            {campoMensaje:`{{Contact.Attribute."${dataExtension}".message}}` },
+
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
