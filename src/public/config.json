@@ -21,7 +21,7 @@
                 { "cellularNumber": "" },
                 { "packFinal": "" },
                 { "mensajeVariables": "" },
-                { "mensaje": "" }
+                { "campoMensaje": "" }
             ],
             "outArguments": [
                 { "puedeComprar": false },
@@ -105,7 +105,7 @@
                             "isNullable": false,
                             "direction": "in"
                         },
-                        "mensaje": {
+                        "campoMensaje": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"

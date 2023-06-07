@@ -53,7 +53,7 @@ interface InputParamenter {
     cellularNumber?: string;
     packFinal?: string;
     mensajeVariables?: string;
-    mensaje?: string;
+    campoMensaje?: string;
 }
 interface DecodedBody {
     inArguments?: InputParamenter[];

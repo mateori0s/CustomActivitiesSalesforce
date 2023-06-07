@@ -24,21 +24,10 @@ define(['postmonger'], (Postmonger) => {
     });
 
     connection.on('clickedNext', () => {
-        let packsType = null;
-        let attributeKeyWord = null;
-        if (document.getElementById('packs-type-upc').checked) {
-            packsType = 'upc';
-            attributeKeyWord = 'upc';
-        }
-        if (document.getElementById('packs-type-ms').checked) {
-            packsType = 'ms';
-            attributeKeyWord = 'segmento';
-        }
 
         payload['arguments'].execute.inArguments = [
-            { packsType },
             // { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
-            { mensajeVariables: `{{Contact.Attribute."TestCA".messageSMS}` }
+            { campoMensaje: `{{Contact.Attribute."TestCA".messageSMS}` }
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
