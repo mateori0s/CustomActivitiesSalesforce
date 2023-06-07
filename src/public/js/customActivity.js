@@ -26,13 +26,11 @@ define(['postmonger'], (Postmonger) => {
     connection.on('clickedNext', () => {
 
         const dataExtension = document.getElementById('dataExtension').value;
-        const campoMensaje = document.getElementById('campoMensaje').value;
+        const campoMensaje = `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}`;
 
         payload['arguments'].execute.inArguments = [
             { dataExtension: dataExtension },
-            // { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
-            {campoMensaje:`{{Contact.Attribute."${dataExtension}".message}}` },
-
+            { campoMensaje: campoMensaje  },
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);

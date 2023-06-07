@@ -1,7 +1,9 @@
 'use strict';
 import { Request, Response } from "express";
+import { performance } from "perf_hooks";
 import { verify } from 'jsonwebtoken';
-
+import https from 'https';
+import axios from 'axios';
 
 interface ExecuteLog {
     body: any;
@@ -95,7 +97,7 @@ const execute = async function (req: Request, res: Response) {
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
                 console.log('BBBBB')
                 console.log('decoded', decoded)
-                return res.status(200).send({mensajeTraducido: "", error: false});
+                return res.status(200).send({mensajeTraducido: "prueba", error: false});
 
             } else {
                 console.error('inArguments invalid.');
