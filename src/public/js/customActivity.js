@@ -29,8 +29,7 @@ define(['postmonger'], (Postmonger) => {
 
         activity['arguments'].execute.inArguments = [
             { dataExtension: dataExtension },
-            // { mensajeTraducido: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
-            { mensajeTraducido: `{{Contact.Attribute."TestCA".messageSMS}` }
+            { mensajeTraducido: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
         ];
     });
 
