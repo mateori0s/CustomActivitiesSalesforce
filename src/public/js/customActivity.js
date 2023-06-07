@@ -26,7 +26,6 @@ define(['postmonger'], (Postmonger) => {
     connection.on('clickedNext', () => {
 
         const dataExtension = document.getElementById('dataExtension').value;
-        const campoMensaje = document.getElementById('campoMensaje').value;
 
         payload['arguments'].execute.inArguments = [
             { dataExtension: dataExtension },
