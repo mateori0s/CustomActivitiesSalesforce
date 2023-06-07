@@ -97,7 +97,7 @@ const execute = async function (req: Request, res: Response) {
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
                 console.log('BBBBB')
                 console.log('decoded', decoded)
-                return res.status(200).send({mensajeTraducido: 'prueba', error: false});
+                return res.status(200).send({mensajeTraducido: "", error: false});
 
             } else {
                 console.error('inArguments invalid.');
