@@ -28,7 +28,7 @@ define(['postmonger'], (Postmonger) => {
         const dataExtension = document.getElementById('dataExtension').value;
 
         activity['arguments'].execute.inArguments = [
-            { dataExtension },
+            { dataExtension: dataExtension },
             // { mensajeTraducido: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
             { mensajeTraducido: `{{Contact.Attribute."TestCA".messageSMS}` }
         ];
