@@ -27,10 +27,12 @@ define(['postmonger'], (Postmonger) => {
 
         const dataExtension = document.getElementById('dataExtension').value;
 
-        activity['arguments'].execute.inArguments = [
+        payload['arguments'].execute.inArguments = [
             { dataExtension: dataExtension },
             { mensajeTraducido: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
         ];
+        payload['metaData'].isConfigured = true;
+        connection.trigger('updateActivity', payload);
     });
 
     connection.trigger('requestTriggerEventDefinition');
