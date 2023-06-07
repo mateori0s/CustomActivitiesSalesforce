@@ -74,6 +74,8 @@ const execute = async function (req: Request, res: Response) {
     const { body } = req;
     const { env: { JWT_SECRET } } = process;
 
+    console.log('AAAAAA')
+
     if (!body) {
         console.error(new Error('invalid jwtdata'));
         return res.status(401).end();
@@ -93,52 +95,10 @@ const execute = async function (req: Request, res: Response) {
                 return res.status(401).end();
             }
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
+                console.log('BBBBB')
+                console.log('decoded', decoded)
+                return res.status(200).send({mensajeTraducido: 'prueba', error: false});
 
-                const { CLARO_OFFERS_API_URL} = process.env;
-                let packMsj: string | null = null;
-                for (const argument of decoded.inArguments) {
-                    if (argument.campoMensaje) packMsj = argument.campoMensaje;
-                    if (packMsj) break;
-                }
-                if (!packMsj) return res.status(400).send('Input parameter is missing.');
-
-
-                const offersRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
-                let packsValidationFailed = false;
-                const offersApiResponse: { data: ResponseBody } | null = await axios({
-                    method: 'post',
-                    url: CLARO_OFFERS_API_URL,
-                    data: {
-                        
-                    } as RequestBody,
-                    headers: {
-                        Country: 'AR',
-                        'Session-Id': 'SF',
-                    },
-                    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-                })
-                    .catch((err) => {
-                        offersRequestDurationTimestamps.end = performance.now();
-                        if (err.response) {
-                            const { data, status } = err.response;
-                        }
-                        console.log('Error when calling the offers API:');
-                        console.log(err);
-                        return null;
-                    });
-                offersRequestDurationTimestamps.end = performance.now();
-
-                let messageToSend = '';
-
-                if (!packsValidationFailed) {
-                    messageToSend = packMsj
-                }
-
-                const response = {
-                    mensajeTraducido: messageToSend,
-                };
-        
-                return res.status(200).send(response);
             } else {
                 console.error('inArguments invalid.');
                 return res.status(400).end();
