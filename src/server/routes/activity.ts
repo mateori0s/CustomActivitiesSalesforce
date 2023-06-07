@@ -144,29 +144,11 @@ const execute = async function (req: Request, res: Response) {
                 let packFinal: string | null = null;
                 let packMsj: string | null = null;
                 for (const argument of decoded.inArguments) {
-                    if (argument.packsType) packsType = argument.packsType;
-                    else if (argument.cellularNumber) cellularNumber = argument.cellularNumber;
-                    else if (argument.packFinal) packFinal = argument.packFinal;
-                    else if (argument.mensajeVariables) packMsj = argument.mensajeVariables;
-                    if (packsType && cellularNumber && packFinal && packMsj) break;
+                    if (argument.mensajeVariables) packMsj = argument.mensajeVariables;
+                    if (packMsj) break;
                 }
-                if (!packsType || !cellularNumber || !packFinal || !packMsj) return res.status(400).send('Input parameter is missing.');
+                if (!packMsj) return res.status(400).send('Input parameter is missing.');
 
-                specialConsoleLog(cellularNumber, 'OFFER_CA_INPUT', { start: null, end: null }, decoded);
-
-                let offersApiChannel: string | null = null;
-                switch (packsType) {
-                    case 'upc':
-                        offersApiChannel = 'PDC';
-                        break;
-                    case 'ms':
-                        offersApiChannel = 'SF';
-                        break;
-                    default:
-                        const errorMessage = `Invalid packs type: ${packsType}`;
-                        console.log(errorMessage);
-                        return res.status(400).end(errorMessage);
-                }
 
                 const offersRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
                 let packsValidationFailed = false;
@@ -257,13 +239,9 @@ const execute = async function (req: Request, res: Response) {
                 }
 
                 const response = {
-                    puedeComprar: packFound === null ? false : true,
                     mensajeTraducido: messageToSend,
-                    error: packsValidationFailed
                 };
-    
-                specialConsoleLog(cellularNumber, 'OFFER_CA_OUTPUT', { start: null, end: null }, response);
-    
+        
                 return res.status(200).send(response);
             } else {
                 console.error('inArguments invalid.');
