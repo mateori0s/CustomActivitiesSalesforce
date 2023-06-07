@@ -150,7 +150,6 @@ const execute = async function (req: Request, res: Response) {
                 if (!packMsj) return res.status(400).send('Input parameter is missing.');
 
 
-
                 const offersRequestDurationTimestamps: DurationTimestampsPair = { start: performance.now(), end: null };
                 let packsValidationFailed = false;
                 const offersApiResponse: { data: ResponseBody } | null = await axios({
@@ -240,13 +239,9 @@ const execute = async function (req: Request, res: Response) {
                 }
 
                 const response = {
-                    puedeComprar: packFound === null ? false : true,
                     mensajeTraducido: messageToSend,
-                    error: packsValidationFailed
                 };
-    
-                specialConsoleLog(cellularNumber, 'OFFER_CA_OUTPUT', { start: null, end: null }, response);
-    
+        
                 return res.status(200).send(response);
             } else {
                 console.error('inArguments invalid.');
