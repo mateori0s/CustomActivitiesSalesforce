@@ -21,9 +21,6 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const packsTypeArg = inArguments.find(arg => arg.packsType);
-        let packsTypeIdSuffix = (packsTypeArg && packsTypeArg.packsType === 'upc') ? 'upc' : 'ms';
-        document.getElementById(`packs-type-${packsTypeIdSuffix}`).checked = true;
     });
 
     connection.on('clickedNext', () => {

@@ -49,6 +49,7 @@ const logData = (req: Request) => { // Log data from the request and put it in a
 
 interface InputParamenter {
     packsType?: string;
+    dataExtension?:string;
     cellularNumber?: string;
     packFinal?: string;
     mensajeVariables?: string;

@@ -16,6 +16,7 @@
     "arguments": {
         "execute": {
             "inArguments": [
+                { "dataExtension": "" },
                 { "packsType": "" },
                 { "cellularNumber": "" },
                 { "packFinal": "" },
@@ -77,6 +78,12 @@
             "execute": {
                 "inArguments": [
                     {
+                        "dataExtension": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        
                         "packsType": {
                             "dataType": "Text",
                             "isNullable": false,

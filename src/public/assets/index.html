@@ -24,17 +24,15 @@
     </head>
     <body>
         <div class="main-block">
-            <h3>Consulta de oferta</h3>
-            <span>Revisa si un número de celular puede o no comprar un pack.</span>
+            <h3>Traspaso de SMS</h3>
+            <span>Traspasa mensaje a CA Broker</span>
             <form action="/">
                 <hr>
-                <div class="switch-field">
-                    <span >Tipo de packs</span>
-                    <input type="radio" id="packs-type-upc" name="packs-type" value="upc" checked/>
-                    <label for="packs-type-upc">UPC</label>
-                    <input type="radio" id="packs-type-ms" name="packs-type" value="ms"/>
-                    <label for="packs-type-ms">MS</label>
-                </div>
+                <label id="icon" for="dataExtension"><i class="fa-solid fa-comment-sms"></i></label>
+                <input type="text" name="dataExtension" id="dataExtension" placeholder="Data Extension" required="" class="text-input">
+                <br>
+                <label id="icon" for="name"><i class="fa-solid fa-comment-sms"></i></label>
+                <input type="text" name="mensajeVariables" id="mensajeVariables" placeholder="Mensaje" required="" class="text-input">
             </form>
         </div>
     </body>
