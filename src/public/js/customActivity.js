@@ -25,12 +25,13 @@ define(['postmonger'], (Postmonger) => {
 
     connection.on('clickedNext', () => {
 
-        payload['arguments'].execute.inArguments = [
-            // { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
-            { campoMensaje: `{{Contact.Attribute."TestCA".messageSMS}` }
+        const dataExtension = document.getElementById('dataExtension').value;
+
+        activity['arguments'].execute.inArguments = [
+            { dataExtension },
+            // { mensajeTraducido: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
+            { mensajeTraducido: `{{Contact.Attribute."TestCA".messageSMS}` }
         ];
-        payload['metaData'].isConfigured = true;
-        connection.trigger('updateActivity', payload);
     });
 
     connection.trigger('requestTriggerEventDefinition');

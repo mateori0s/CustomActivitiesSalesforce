@@ -48,11 +48,7 @@ const logData = (req: Request) => { // Log data from the request and put it in a
 }
 
 interface InputParamenter {
-    packsType?: string;
     dataExtension?:string;
-    cellularNumber?: string;
-    packFinal?: string;
-    mensajeVariables?: string;
     campoMensaje?: string;
 }
 interface DecodedBody {
@@ -63,7 +59,7 @@ interface DurationTimestampsPair {
     end: number | null;
 }
 
-interface RequestBody {
+interface RequestBody { //////????
     billNumber: number;
     channel: string;
     services: string[];
@@ -72,45 +68,6 @@ interface RequestBody {
 interface ResponseBody {
     responseCode: number;
     responseMessage: string;
-    client: null;
-    offerServices: {
-        id: string;
-        pendingProvisioning: boolean;
-        offerPacks: {
-            packId: string;
-            order: number;
-            description: string;
-            priceTax: {
-                amount: number;
-                currency: string;
-            };
-            canBePurchased: boolean;
-            detail: {
-                price: {
-                    amount: number;
-                    currency: string;
-                };
-                initialVolume: number;
-                initialUnit: string;
-                volumeThreshold: number;
-                timeThreshold: number;
-                volumeTime: number;
-                type: string;
-                unitsTime: string;
-                isRenewable: boolean;
-            };
-            reasons: {
-                code: string;
-                description: string;
-            }[];
-            paymentsMethods: {
-                method: string;
-                canBePurchased: boolean;
-            }[];
-        }[];
-        activePacks: any[];
-        blockingReason: null;
-    }[];
 }
 
 const execute = async function (req: Request, res: Response) {
@@ -138,13 +95,9 @@ const execute = async function (req: Request, res: Response) {
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
 
                 const { CLARO_OFFERS_API_URL} = process.env;
-
-                let packsType: string | null = null;
-                let cellularNumber: string | null = null;
-                let packFinal: string | null = null;
                 let packMsj: string | null = null;
                 for (const argument of decoded.inArguments) {
-                    if (argument.mensajeVariables) packMsj = argument.mensajeVariables;
+                    if (argument.campoMensaje) packMsj = argument.campoMensaje;
                     if (packMsj) break;
                 }
                 if (!packMsj) return res.status(400).send('Input parameter is missing.');
@@ -156,9 +109,7 @@ const execute = async function (req: Request, res: Response) {
                     method: 'post',
                     url: CLARO_OFFERS_API_URL,
                     data: {
-                        billNumber: Number(cellularNumber),
-                        channel: offersApiChannel,
-                        services: ["GPRS"],
+                        
                     } as RequestBody,
                     headers: {
                         Country: 'AR',
@@ -170,7 +121,6 @@ const execute = async function (req: Request, res: Response) {
                         offersRequestDurationTimestamps.end = performance.now();
                         if (err.response) {
                             const { data, status } = err.response;
-                            specialConsoleLog(cellularNumber!, 'OFFERS_REQUEST_FAILED', offersRequestDurationTimestamps, { data, status });
                         }
                         console.log('Error when calling the offers API:');
                         console.log(err);
@@ -178,64 +128,10 @@ const execute = async function (req: Request, res: Response) {
                     });
                 offersRequestDurationTimestamps.end = performance.now();
 
-                let packFound = null;
-                if (offersApiResponse) {
-                    if (offersApiResponse.data) {
-                        specialConsoleLog(
-                            cellularNumber,
-                            'OFFERS_RESPONSE',
-                            offersRequestDurationTimestamps,
-                            offersApiResponse.data,
-                        );
-                    }
-                    try {
-                        for (const service of offersApiResponse.data.offerServices) {
-                            for (const pack of service.offerPacks) {
-                                if (pack.packId === packFinal && pack.canBePurchased === true) {
-                                    packFound = pack;
-                                    break;
-                                }
-                            }
-                            if (packFound !== null) break;
-                        }
-                    } catch (err) {
-                        console.log(`Error when processing the response data from the offers API:`);
-                        console.log(err);
-                        packsValidationFailed = true;
-                    }
-                } else packsValidationFailed = true;
-
                 let messageToSend = '';
 
-                if (packFound && !packsValidationFailed) {
-                    const { unitsTime, initialVolume, initialUnit, volumeTime } = packFound.detail;
-                    const { description, priceTax } = packFound;
-
-                    let unitsTimeWord = null;
-                    switch (unitsTime) {
-                        case 'hora':
-                            unitsTimeWord = { singular: 'hora', plural: 'horas' };
-                            break;
-                        case 'dia':
-                            unitsTimeWord = { singular: 'día', plural: 'días' };
-                            break;
-                        case 'mes':
-                            unitsTimeWord = { singular: 'mes', plural: 'meses' };
-                            break;
-                        default:
-                            const errorMessage = `Unexpected error. Invalid 'unitsTime' value: ${unitsTime}`;
-                            console.log(errorMessage);
-                            return res.status(500).end(errorMessage);
-                    }
-
-                    const discountValue = getDiscountValueFromPackDescription(description);
-
+                if (!packsValidationFailed) {
                     messageToSend = packMsj
-                        .trim()
-                        .replace('#C#', `${initialVolume}${initialUnit}`)
-                        .replace('#V#', `${volumeTime} ${volumeTime === 1 ? unitsTimeWord.singular : unitsTimeWord.plural}`)
-                        .replace('#P#', String(Math.round((priceTax.amount + Number.EPSILON) * 100) / 100))
-                        .replace('#D#', discountValue !== null ? String(discountValue) : '#D#');
                 }
 
                 const response = {
