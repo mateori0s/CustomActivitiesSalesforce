@@ -26,6 +26,8 @@ define(['postmonger'], (Postmonger) => {
     connection.on('clickedNext', () => {
         let packsType = null;
         let attributeKeyWord = null;
+        let mensaje = document.getElementById('mensaje');
+        
         if (document.getElementById('packs-type-upc').checked) {
             packsType = 'upc';
             attributeKeyWord = 'upc';
@@ -37,9 +39,7 @@ define(['postmonger'], (Postmonger) => {
 
         payload['arguments'].execute.inArguments = [
             { packsType },
-            { cellularNumber: `{{Contact.Attribute."Clientes Cluster Prepago".cellular_number}}` },
-            { packFinal: `{{Contact.Attribute."Clientes Cluster Prepago".pack_${attributeKeyWord}_final}}` },
-            { mensajeVariables: `{{Contact.Attribute."Clientes Cluster Prepago".pack_${attributeKeyWord}_msj}}` },
+            { mensajeVariables: `{{Contact.Attribute."TestCA".${mensaje}}}` },
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);

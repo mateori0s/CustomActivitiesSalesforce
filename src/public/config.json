@@ -20,7 +20,8 @@
                 { "packsType": "" },
                 { "cellularNumber": "" },
                 { "packFinal": "" },
-                { "mensajeVariables": "" }
+                { "mensajeVariables": "" },
+                { "mensaje": "" }
             ],
             "outArguments": [
                 { "puedeComprar": false },
@@ -100,6 +101,11 @@
                             "direction": "in"
                         },
                         "mensajeVariables": {
+                            "dataType": "Text",
+                            "isNullable": false,
+                            "direction": "in"
+                        },
+                        "mensaje": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
