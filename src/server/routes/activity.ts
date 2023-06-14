@@ -48,6 +48,7 @@ const logData = (req: Request) => { // Log data from the request and put it in a
 interface InputParamenter {
     dataExtension?:string;
     campoMensaje?: string;
+    mensajeTraducido?: string;
 }
 interface DecodedBody {
     inArguments?: InputParamenter[];
@@ -94,11 +95,19 @@ const execute = async function (req: Request, res: Response) {
             }
             if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
                 console.log('BBBBB')
+                let message: string | null = null;
+                for (const argument of decoded.inArguments) {
+                    if (argument.mensajeTraducido) message = argument.mensajeTraducido;
+                    if (message ) break;
+                }
+                if (
+                    !message
+                ) return res.status(400).send(`Input parameter is missing.`);
 
                 console.log('decoded', decoded)
 
                 return res.status(200).send({mensajeTraducido: "", error: false});
-                
+
 
             } else {
                 console.error('inArguments invalid.');
