@@ -27,25 +27,15 @@ define(['postmonger'], (Postmonger) => {
 
         const dataExtension = document.getElementById('dataExtension').value;
 
-        let mensajeTraducido;
-        {
-            const deColumn = document.getElementById("campoMensaje").value;
-            mensajeTraducido = `{{Contact.Attribute."${dataExtension}".${deColumn}}}`;
-        }
-
         payload['arguments'].execute.inArguments = [
-            { dataExtension},
+            { dataExtension: dataExtension },
             // { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
-            {campoMensaje}
+            {campoMensaje:`{{Contact.Attribute."${dataExtension}".message}}` },
+
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
-
-        const dataExtensionMessageColumnArg = inArguments.find(arg => arg.dataExtensionMessageColumn);
-        if (dataExtensionMessageColumnArg) {
-            document.getElementById('dataExtensionMessageColumn').value = dataExtensionMessageColumnArg.dataExtensionMessageColumn;
-        }
-    }); 
+    });
 
     connection.trigger('requestTriggerEventDefinition');
     connection.on('requestedTriggerEventDefinition', (eventDefinitionModel) => {
