@@ -25,7 +25,7 @@ define(['postmonger'], (Postmonger) => {
 
     const dataExtensionMessageColumnArg = inArguments.find(arg => arg.dataExtensionMessageColumn);
     if (dataExtensionMessageColumnArg) {
-        document.getElementById('dataExtensionMessageColumn').value = dataExtensionMessageColumnArg.dataExtensionMessageColumn;
+        document.getElementById('campoMensaje').value = dataExtensionMessageColumnArg.dataExtensionMessageColumn;
     }
 
     connection.on('clickedNext', () => {
@@ -39,7 +39,7 @@ define(['postmonger'], (Postmonger) => {
 
         const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
         if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
-        
+
         payload['arguments'].execute.inArguments = [
             { dataExtension},
             // { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
