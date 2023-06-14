@@ -23,9 +23,9 @@ define(['postmonger'], (Postmonger) => {
 
     });
 
-    const dataExtensionMessageColumnArg = inArguments.find(arg => arg.campoMensaje);
+    const dataExtensionMessageColumnArg = inArguments.find(arg => arg.dataExtensionMessageColumn);
     if (dataExtensionMessageColumnArg) {
-        document.getElementById('campoMensaje').value = dataExtensionMessageColumnArg.campoMensaje;
+        document.getElementById('campoMensaje').value = dataExtensionMessageColumnArg.dataExtensionMessageColumn;
     }
 
     connection.on('clickedNext', () => {
