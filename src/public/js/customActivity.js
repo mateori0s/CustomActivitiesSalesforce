@@ -23,23 +23,16 @@ define(['postmonger'], (Postmonger) => {
 
     });
 
-    const dataExtensionMessageColumnArg = inArguments.find(arg => arg.dataExtensionMessageColumn);
-    if (dataExtensionMessageColumnArg) {
-        document.getElementById('dataExtensionMessageColumn').value = dataExtensionMessageColumnArg.dataExtensionMessageColumn;
-    }
-
     connection.on('clickedNext', () => {
 
         const dataExtension = document.getElementById('dataExtension').value;
 
         let mensajeTraducido;
+        {
+            const deColumn = document.getElementById("campoMensaje").value;
+            mensajeTraducido = `{{Contact.Attribute."${dataExtension}".${deColumn}}}`;
+        }
 
-        const deColumn = document.getElementById("campoMensaje").value;
-        mensajeTraducido = `{{Contact.Attribute."${dataExtension}".${deColumn}}}`;
-
-        const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
-        if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
-        
         payload['arguments'].execute.inArguments = [
             { dataExtension},
             // { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
@@ -47,7 +40,12 @@ define(['postmonger'], (Postmonger) => {
         ];
         payload['metaData'].isConfigured = true;
         connection.trigger('updateActivity', payload);
-    });     
+
+        const dataExtensionMessageColumnArg = inArguments.find(arg => arg.dataExtensionMessageColumn);
+        if (dataExtensionMessageColumnArg) {
+            document.getElementById('dataExtensionMessageColumn').value = dataExtensionMessageColumnArg.dataExtensionMessageColumn;
+        }
+    }); 
 
     connection.trigger('requestTriggerEventDefinition');
     connection.on('requestedTriggerEventDefinition', (eventDefinitionModel) => {
