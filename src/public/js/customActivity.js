@@ -21,16 +21,26 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
+
+        const dataExtensionMessageColumnArg = inArguments.find(arg => arg.campoMensaje);
+        if (dataExtensionMessageColumnArg) {
+            document.getElementById('campoMensaje').value = dataExtensionMessageColumnArg.campoMensaje;
+        }
+
     });
 
     connection.on('clickedNext', () => {
 
         const dataExtension = document.getElementById('dataExtension').value;
 
+        let mensajeTraducido;
+        const deColumn = document.getElementById("campoMensaje").value;
+        mensajeTraducido = `{{Contact.Attribute."${dataExtension}".${deColumn}}}`;
+
         payload['arguments'].execute.inArguments = [
             { dataExtension: dataExtension },
             // { campoMensaje: `{{Contact.Attribute."${dataExtension}".${campoMensaje}}}` },
-            {campoMensaje:`{{Contact.Attribute."${dataExtension}".message}}` },
+            {campoMensaje},
 
         ];
         payload['metaData'].isConfigured = true;

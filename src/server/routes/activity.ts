@@ -83,7 +83,7 @@ const execute = async function (req: Request, res: Response) {
         return res.status(401).end();
     }
 
-    verify(
+    verify( 
         body.toString('utf8'),
         JWT_SECRET,
         { algorithms: ['HS256'], complete: false },
@@ -102,6 +102,7 @@ const execute = async function (req: Request, res: Response) {
                 console.error('inArguments invalid.');
                 return res.status(400).end();
             }
+
         },
     );
 };
