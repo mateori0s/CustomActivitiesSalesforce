@@ -1,16 +1,14 @@
 {
-  "name": "smsTemplate",
-  "version": "1.0.1",
-  "description": "Send SMS Journey Builder",
+  "name": "cdp-ca-saldo",
+  "version": "1.0.3",
+  "description": "CA CDP Claro Journey Builder",
   "engines": {
     "node": "^12.12.16"
   },
+  "type": "module",
+  "typeapp": "Express",
   "scripts": {
     "start": "node app.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": ""
   },
   "keywords": [
     "journey",
@@ -21,7 +19,7 @@
   "author": "TheonThai",
   "homepage": "",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.19.2",
     "base64url": "^3.0.1",
     "body-parser": "^1.19.0",
     "bower": "^1.8.8",
@@ -32,7 +30,6 @@
     "jsforce": "^1.9.3",
     "jsonwebtoken": "^8.5.1",
     "njwt": "^1.0.0",
-    "node-libcurl": "^2.0.3",
     "path": "^0.12.7",
     "pg": "^7.14.0",
     "request": "^2.88.0",

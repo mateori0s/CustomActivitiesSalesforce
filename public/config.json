@@ -3,60 +3,71 @@
     "metaData": {
         "icon": "images/icon.png",
         "iconSmall": "images/iconSmall.png",
-        "category": "message"
+        "category": "custom"
     },
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "<NAME_HERE>",
-            "description": "<DESCRIPTION_HERE>",
+            "name": "DINAMICALLY_REPLACED",
+            "description": "Revisa si la línea tiene un pack renovable pendiente de renovar.",
             "step1Label": "Configure Activity"
         }
     },
     "arguments": {
         "execute": {
             "inArguments": [
-                { "subscriberKey": "" },
-                { "phoneNumber": "" },
-                { "message": "" }
+                { "dataExtension": "" },
+                { "cellularNumber": "" },
+                { "channel": "" }
             ],
-            "outArguments": [],
-            "url": "https://<HOST_HERE>.com/journeybuilder/execute",
+            "outArguments": [
+                { "responseCode": ""},
+                {"responseMessage": ""},
+                {"packId": ""},
+                {"handle": ""}
+            ],
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "body": "",
-            "header": "",
             "format": "json",
             "useJwt": true,
-            "timeout": 10000
+            "timeout": 10000,
+            "retryCount": 3,
+			"retryDelay": 10000
         }
     },
     "configurationArguments": {
-        "applicationExtensionKey": "<APPLICATION_EXTENSION_KEY_HERE>",
+        "applicationExtensionKey": "DINAMICALLY_REPLACED",
         "save": {
-            "url": "https://<HOST_HERE>.com/journeybuilder/save",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "https://<HOST_HERE>/journeybuilder/publish",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "https://<HOST_HERE>/journeybuilder/stop",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "https://<HOST_HERE>/journeybuilder/validate",
+            "url": "DINAMICALLY_REPLACED",
+            "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "useJwt": true
         }
     },
     "userInterfaces": {
         "configModal": {
-            "height": 700,
-            "width": 1000,
+            "height": 450,
+            "width": 500,
             "fullscreen": false
         }
     },
@@ -65,24 +76,45 @@
             "execute": {
                 "inArguments": [
                     {
-                        "phoneNumber": {
-                            "dataType": "Phone",
-                            "isNullable": false,
-                            "direction": "in"
-                        },
-                        "subscriberKey": {
+                        "dataExtension": {
                             "dataType": "Text",
-                            "isNullable": false,
+                            "isNullable": true,
                             "direction": "in"
                         },
-                        "message": {
+                        "cellularNumber": {
+                            "dataType": "Phone",
+                            "isNullable": true,
+                            "direction": "in"
+                        },
+                        "channel": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
                         }
                     }
                 ],
-                "outArguments": []
+                "outArguments": [{
+                    "responseCode": {
+                        "dataType": "Decimal",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "responseMessage": {
+                        "dataType": "Text",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "packId": {
+                        "dataType": "Text",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "handle": {
+                        "dataType": "Decimal",
+                        "direction": "out",
+                        "access": "visible"
+                    }
+                }]
             }
         }
     }

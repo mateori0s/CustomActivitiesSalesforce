@@ -1,18 +1,10 @@
 'use strict';
-var util = require('util');
-
-// Deps
-const Path = require('path');
-const JWT = require(Path.join(__dirname, '..', 'lib', 'jwtDecoder.js'));
-var util = require('util');
-let axios = require("axios");
-
-// Global Variables
-const tokenURL = `${process.env.authenticationUrl}/v2/token`;
-
+const axios = require("axios");
+const https = require("https");
+const { performance } = require("perf_hooks");
 
 exports.logExecuteData = [];
-function logData(req) {
+const logData = (req) => { // Log data from the request and put it in an array accessible to the main app.
     exports.logExecuteData.push({
         body: req.body,
         headers: req.headers,
@@ -32,117 +24,166 @@ function logData(req) {
         secure: req.secure,
         originalUrl: req.originalUrl
     });
-    console.log("body: " + util.inspect(req.body));
-    console.log("headers: " + req.headers);
-    console.log("trailers: " + req.trailers);
-    console.log("method: " + req.method);
-    console.log("url: " + req.url);
-    console.log("params: " + util.inspect(req.params));
-    console.log("query: " + util.inspect(req.query));
-    console.log("route: " + req.route);
-    console.log("cookies: " + req.cookies);
-    console.log("ip: " + req.ip);
-    console.log("path: " + req.path);
-    console.log("host: " + req.host);
-    console.log("fresh: " + req.fresh);
-    console.log("stale: " + req.stale);
-    console.log("protocol: " + req.protocol);
-    console.log("secure: " + req.secure);
-    console.log("originalUrl: " + req.originalUrl);
 }
 
-/*
- * POST Handler for / route of Activity (this is the edit route).
- */
-exports.edit = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
-    logData(req);
-    res.send(200, 'Edit');
+const JWT = (body, secret, cb) => {
+    if (!body) return cb(new Error('invalid jwtdata'));
+    require('jsonwebtoken').verify(body.toString('utf8'), secret, { algorithm: 'HS256' }, cb);
 };
 
-/*
- * POST Handler for /save/ route of Activity.
- */
-exports.save = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
-    logData(req);
-    res.send(200, 'Save');
-};
-
-/*
- * POST Handler for /execute/ route of Activity.
- */
-exports.execute = function (req, res) {
-    console.log(JSON.stringify(req.headers));
-    JWT(req.body, process.env.jwtSecret, (err, decoded) => {
-        // verification error -> unauthorized request
+exports.execute = (req, res) => {
+    JWT(req.body, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
             console.error(err);
             return res.status(401).end();
         }
-
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            console.log('##### decoded ####=>', decoded);
-            res.send(200, 'Execute');
+            const { value, expiresAt } = req.app.locals.token;
+
+            let phone = '';
+            for (const argument of decoded.inArguments) {
+                if (argument.cellularNumber) {
+                    phone = argument.cellularNumber;
+                    break;
+                }
+            }
+
+            const now = new Date();
+
+            // let accountBalance = '0.00';
+            // let balanceValidationFailed = false;
+            let responseCode;
+            let responseMessage;
+            let packId;
+            let handle;
+
+            const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
+            if (value === null || expiresAt < now) {
+                const { TOKEN_API_URL, TOKEN_API_USERNAME, TOKEN_API_PASSWORD } = process.env;
+
+                const tokenRequestDurationTimestamps = { start: performance.now(), end: null };
+                const token = await axios({
+                    method: 'post',
+                    url: TOKEN_API_URL,
+                    data: {
+                        username: TOKEN_API_USERNAME,
+                        password: TOKEN_API_PASSWORD
+                    },
+                    httpsAgent,
+                })
+                    .then((res) => {
+                        if (res.headers.authorization) return res.headers.authorization.substring(7);
+                    })
+                    .catch((err) => {
+                        tokenRequestDurationTimestamps.end = performance.now();
+                        if (err.response) {
+                            const { data, status } = err.response;
+                            specialConsoleLog(phone, 'TOKEN_REQUEST_ERROR', tokenRequestDurationTimestamps, { data, status });
+                        }
+                        console.log('Error:');
+                        console.log(err);
+                    });
+                if (!token) balanceValidationFailed = true;
+                else {
+                    req.app.locals.token = {
+                        value: token,
+                        expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 23),
+                    };
+                }
+            }
+
+            if (!balanceValidationFailed) {
+                const {
+                    BALANCES_API_URL,
+                    BALANCES_API_SESSION_ID,
+                    BALANCES_API_CHANNEL,
+                    BALANCES_API_SERVICE,
+                    BALANCES_API_COUNTRY
+                } = process.env;
+
+                const balanceRequestDurationTimestamps = { start: performance.now(), end: null };
+                const saldoBalancesApiResponse = await axios({
+                    method: 'post',
+                    url: BALANCES_API_URL,
+                    headers: {
+                        Authorization: `Bearer ${req.app.locals.token.value}`,
+                        Country: BALANCES_API_COUNTRY,
+                        'Session-Id': BALANCES_API_SESSION_ID,
+                        SubId: `549${phone}`,
+                    },
+                    httpsAgent,
+                })
+                    .then((res) => {
+                        balanceRequestDurationTimestamps.end = performance.now();
+                        return res.data;
+                    })
+                    .catch((err) => {
+                        balanceRequestDurationTimestamps.end = performance.now();
+                        if (err.response) {
+                            const { data, status } = err.response;
+                            specialConsoleLog(phone, 'BALANCE_REQUEST_ERROR', balanceRequestDurationTimestamps, { data, status });
+                        }
+                        console.log('Error:');
+                        console.log(err);
+                    });
+                if (!saldoBalancesApiResponse) balanceValidationFailed = true;
+                else accountBalance = parseFloat(saldoBalancesApiResponse.balancesDetails.accountBalance).toFixed(2);
+            }
+
+            // const result = `{"balanceValidationFailed":${balanceValidationFailed ? 'true' : 'false'},"saldo":${accountBalance}}`;
+
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200);
+            res.end(result);
         } else {
             console.error('inArguments invalid.');
             return res.status(400).end();
         }
-
     });
 };
 
+exports.edit = (req, res) => {
+    logData(req);
+    res.send(200, 'Edit');
+};
 
-/*
- * POST Handler for /publish/ route of Activity.
- */
-exports.publish = function (req, res) {
-    //console.log( req.body );
+exports.save = (req, res) => {
+    logData(req);
+    res.send(200, 'Save');
+};
+
+exports.publish = (req, res) => {
     logData(req);
     res.send(200, 'Publish');
 };
 
-
-/*
- * POST Handler for /validate/ route of Activity.
- */
-exports.validate = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
+exports.validate = (req, res) => {
     logData(req);
     res.send(200, 'Validate');
 };
 
-
-/*
- * POST Handler for /Stop/ route of Activity.
- */
-exports.stop = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
+exports.stop = (req, res) => {
     logData(req);
     res.send(200, 'Stop');
 };
 
+function millisToMinutesAndSeconds(millis) {
+    const minutes = Math.floor(millis / 60000);
+    const seconds = ((millis % 60000) / 1000).toFixed(0);
+    return Number(seconds) == 60 ? minutes + 1 + 'm' : minutes + 'm ' + (Number(seconds) < 10 ? '0' : '') + seconds + 's';
+}
 
-/**
- * This function relies on the env variables to be set
- * 
- * This function invokes the enhanced package authentication. 
- * This would return a access token that can be used to call additional Marketing Cloud APIs
- * 
- */
-function retrieveToken () {
-    axios.post(tokenURL, { // Retrieving of token
-        grant_type: 'client_credentials',
-        client_id: process.env.clientId,
-        client_secret: process.env.clientSecret
-    })
-    .then(function (response) {
-        return response.data['access_token'];
-    }).catch(function (error) {
-        return error;
-    });
+function specialConsoleLog(phoneNumber, eventName, durationTimestamps, data) {
+    const now = new Date();
+    const todayDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    const currentTime = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+
+    const { start, end } = durationTimestamps;
+    let duration = '-';
+    if (start && end) duration = millisToMinutesAndSeconds(end - start);
+
+    const jsonifiedData = JSON.stringify(data);
+
+    console.log(`${todayDate}|${currentTime}|${phoneNumber}|${eventName}|${duration}|${jsonifiedData}`);
 }
