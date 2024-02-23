@@ -59,59 +59,56 @@ exports.execute = (req, res) => {
 
             const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-            if (value === null || expiresAt < now) {
-                const { TOKEN_API_URL, TOKEN_API_USERNAME, TOKEN_API_PASSWORD } = process.env;
+            // if (value === null || expiresAt < now) {
+            //     const { TOKEN_API_URL, TOKEN_API_USERNAME, TOKEN_API_PASSWORD } = process.env;
 
-                const tokenRequestDurationTimestamps = { start: performance.now(), end: null };
-                const token = await axios({
-                    method: 'post',
-                    url: TOKEN_API_URL,
-                    data: {
-                        username: TOKEN_API_USERNAME,
-                        password: TOKEN_API_PASSWORD
-                    },
-                    httpsAgent,
-                })
-                    .then((res) => {
-                        if (res.headers.authorization) return res.headers.authorization.substring(7);
-                    })
-                    .catch((err) => {
-                        tokenRequestDurationTimestamps.end = performance.now();
-                        if (err.response) {
-                            const { data, status } = err.response;
-                            specialConsoleLog(phone, 'TOKEN_REQUEST_ERROR', tokenRequestDurationTimestamps, { data, status });
-                        }
-                        console.log('Error:');
-                        console.log(err);
-                    });
-                if (!token) balanceValidationFailed = true;
-                else {
-                    req.app.locals.token = {
-                        value: token,
-                        expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 23),
-                    };
-                }
-            }
+            //     const tokenRequestDurationTimestamps = { start: performance.now(), end: null };
+            //     const token = await axios({
+            //         method: 'post',
+            //         url: TOKEN_API_URL,
+            //         data: {
+            //             username: TOKEN_API_USERNAME,
+            //             password: TOKEN_API_PASSWORD
+            //         },
+            //         httpsAgent,
+            //     })
+            //         .then((res) => {
+            //             if (res.headers.authorization) return res.headers.authorization.substring(7);
+            //         })
+            //         .catch((err) => {
+            //             tokenRequestDurationTimestamps.end = performance.now();
+            //             if (err.response) {
+            //                 const { data, status } = err.response;
+            //                 specialConsoleLog(phone, 'TOKEN_REQUEST_ERROR', tokenRequestDurationTimestamps, { data, status });
+            //             }
+            //             console.log('Error:');
+            //             console.log(err);
+            //         });
+            //     if (!token) balanceValidationFailed = true;
+            //     else {
+            //         req.app.locals.token = {
+            //             value: token,
+            //             expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 23),
+            //         };
+            //     }
+            // }
 
             if (!balanceValidationFailed) {
                 const {
-                    BALANCES_API_URL,
-                    BALANCES_API_SESSION_ID,
+                    API_URL,
+                    API_SESSION_ID,
                     BALANCES_API_CHANNEL,
                     BALANCES_API_SERVICE,
-                    BALANCES_API_COUNTRY
+                    API_COUNTRY
                 } = process.env;
 
                 const balanceRequestDurationTimestamps = { start: performance.now(), end: null };
                 const saldoBalancesApiResponse = await axios({
                     method: 'post',
-                    url: BALANCES_API_URL,
+                    url: API_URL,
                     headers: {
-                        Authorization: `Bearer ${req.app.locals.token.value}`,
-                        Country: BALANCES_API_COUNTRY,
-                        'Session-Id': BALANCES_API_SESSION_ID,
-                        SubId: `549${phone}`,
-                    },
+                        Country: API_COUNTRY,
+                        'Session-Id': API_SESSION_ID},
                     httpsAgent,
                 })
                     .then((res) => {
