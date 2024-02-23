@@ -9,6 +9,7 @@
   "typeapp": "Express",
   "scripts": {
     "start": "node app.js",
+    "clean": "rm -rf dist",
     "build": "tsc && npx webpack"
   },
   "keywords": [
