@@ -49,14 +49,6 @@ exports.execute = (req, res) => {
             }
 
             const now = new Date();
-
-            // let accountBalance = '0.00';
-            // let balanceValidationFailed = false;
-            let responseCode;
-            let responseMessage;
-            let packId;
-            let handle;
-
             const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
             // if (value === null || expiresAt < now) {
@@ -97,18 +89,17 @@ exports.execute = (req, res) => {
                 const {
                     API_URL,
                     API_SESSION_ID,
-                    BALANCES_API_CHANNEL,
-                    BALANCES_API_SERVICE,
                     API_COUNTRY
                 } = process.env;
 
                 const balanceRequestDurationTimestamps = { start: performance.now(), end: null };
-                const saldoBalancesApiResponse = await axios({
+                const packRenovableApiResponse = await axios({
                     method: 'post',
                     url: API_URL,
                     headers: {
                         Country: API_COUNTRY,
-                        'Session-Id': API_SESSION_ID},
+                        'Session-Id': API_SESSION_ID
+                    },
                     httpsAgent,
                 })
                     .then((res) => {
@@ -119,13 +110,13 @@ exports.execute = (req, res) => {
                         balanceRequestDurationTimestamps.end = performance.now();
                         if (err.response) {
                             const { data, status } = err.response;
-                            specialConsoleLog(phone, 'BALANCE_REQUEST_ERROR', balanceRequestDurationTimestamps, { data, status });
+                            specialConsoleLog(phone, 'API_REQUEST_ERROR', balanceRequestDurationTimestamps, { data, status });
                         }
                         console.log('Error:');
                         console.log(err);
                     });
-                if (!saldoBalancesApiResponse) balanceValidationFailed = true;
-                else accountBalance = parseFloat(saldoBalancesApiResponse.balancesDetails.accountBalance).toFixed(2);
+                if (!packRenovableApiResponse) balanceValidationFailed = true;
+                else accountBalance = parseFloat(packRenovableApiResponse.balancesDetails.accountBalance).toFixed(2);
             }
 
             // const result = `{"balanceValidationFailed":${balanceValidationFailed ? 'true' : 'false'},"saldo":${accountBalance}}`;
