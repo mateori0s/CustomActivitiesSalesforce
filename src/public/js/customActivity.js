@@ -10,7 +10,6 @@ define(['postmonger'], (Postmonger) => {
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
     });
-
     connection.on('initActivity', (data) => {
         if (data) payload = data;
 
@@ -21,26 +20,23 @@ define(['postmonger'], (Postmonger) => {
             data.arguments.execute.inArguments.length > 0
         ) ? data.arguments.execute.inArguments : [];
 
-        const dataExtensionMessageColumnArg = inArguments.find(arg => arg.campoMensaje);
-        if (dataExtensionMessageColumnArg) document.getElementById('campoMensaje').value = dataExtensionMessageColumnArg.campoMensaje;
-
         const dataExtensionArg = inArguments.find(arg => arg.dataExtension);
         if (dataExtensionArg) document.getElementById('dataExtension').value = dataExtensionArg.dataExtension;
+
+        const channelArg = inArguments.find(arg => arg.channel);
+        if (channelArg) document.getElementById('channel').value = channelArg.channel;
+      
     });
 
     connection.on('clickedNext', () => {
-
         const dataExtension = document.getElementById('dataExtension').value;
-        const campoMsj = document.getElementById("campoMensaje").value;
+        const cellularNumber = `{{Contact.Attribute."${dataExtension}".cellular_number}}`;
+        const channel = document.getElementById('channel').value;
 
-        let mensajeTraducido;
-        const deColumn = document.getElementById("campoMensaje").value;
-        mensajeTraducido = `{{Contact.Attribute."${dataExtension}".${deColumn}}}`;
-
-        
         payload['arguments'].execute.inArguments = [
-            { dataExtension: dataExtension },
-            { campoMensaje: campoMsj }
+            { dataExtension: dataExtension ? dataExtension : null },
+            { cellularNumber: cellularNumber ? cellularNumber : null },
+            { channel: channel ? channel : null },
 
         ];
         payload['metaData'].isConfigured = true;

@@ -1,28 +1,40 @@
 'use strict';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import https, { Agent } from "https";
 import { Request, Response } from "express";
-import { verify } from 'jsonwebtoken';
+import { performance } from "perf_hooks";
 
-
-interface ExecuteLog {
+interface LogExecuteData {
     body: any;
     headers: any;
     trailers: any;
-    method: any;
-    url: any;
+    method: string;
+    url: string;
     params: any;
     query: any;
     route: any;
     cookies: any;
-    ip: any;
-    path: any;
-    host: any;
-    fresh: any;
-    stale: any;
-    protocol: any;
-    secure: any;
-    originalUrl: any;
+    ip: string;
+    path: string;
+    host: string;
+    fresh: boolean;
+    stale: boolean;
+    protocol: string;
+    secure: boolean;
+    originalUrl: string;
 }
-const logExecuteData: ExecuteLog[] = [];
+
+interface DecodedData {
+    inArguments?: { cellularNumber?: string }[];
+}
+
+interface Token {
+    value: string | null;
+    expiresAt: Date;
+}
+
+export const logExecuteData: LogExecuteData[] = [];
+
 const logData = (req: Request) => { // Log data from the request and put it in an array accessible to the main app.
     logExecuteData.push({
         body: req.body,
@@ -36,7 +48,7 @@ const logData = (req: Request) => { // Log data from the request and put it in a
         cookies: req.cookies,
         ip: req.ip,
         path: req.path,
-        host: req.host,
+        host: req.hostname,
         fresh: req.fresh,
         stale: req.stale,
         protocol: req.protocol,
@@ -45,126 +57,170 @@ const logData = (req: Request) => { // Log data from the request and put it in a
     });
 }
 
-interface InputParamenter {
-    dataExtension?:string;
-    campoMensaje?: string;
-}
-interface DecodedBody {
-    inArguments?: InputParamenter[];
-}
-interface DurationTimestampsPair {
-    start: number | null;
-    end: number | null;
-}
+const JWT = (body: Buffer, secret: string, cb: (err: Error | null, decoded?: DecodedData) => void) => {
+    if (!body) return cb(new Error('invalid jwtdata'));
+    require('jsonwebtoken').verify(body.toString('utf8'), secret, { algorithm: 'HS256' }, cb);
+};
 
-interface RequestBody { 
-    billNumber: number;
-    channel: string;
-    mensaje: string;
-    services: string[];
-}
+export const execute = (req: Request, res: Response) => {
+    JWT(req.body, process.env.JWT_SECRET || '', async (err, decoded) => {
+        if (err) {
+            console.error(err);
+            return res.status(401).end();
+        }
+        if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
+            const { value, expiresAt } = req.app.locals.token as Token;
 
-interface ResponseBody {
-    responseCode: number;
-    responseMessage: string;
-}
-
-const execute = async function (req: Request, res: Response) {
-    const { body } = req;
-    const { env: { JWT_SECRET } } = process;
-
-    console.log('AAAAAA')
-
-    if (!body) {
-        console.error(new Error('invalid jwtdata'));
-        return res.status(401).end();
-    }
-    if (!JWT_SECRET) {
-        console.error(new Error('jwtSecret not provided'));
-        return res.status(401).end();
-    }
-
-    verify( 
-        body.toString('utf8'),
-        JWT_SECRET,
-        { algorithms: ['HS256'], complete: false },
-        async (err: any, decoded?: DecodedBody) => {
-            if (err) {
-                console.error(err);
-                return res.status(401).end();
-            }
-            if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-                console.log('BBBBB')
-                console.log('decoded', decoded)
-
-                return res.status(200).send({mensajeTraducido: "", error: false});
-
-            } else {
-                console.error('inArguments invalid.');
-                return res.status(400).end();
+            let phone = '';
+            for (const argument of decoded.inArguments) {
+                if (argument.cellularNumber) {
+                    phone = argument.cellularNumber;
+                    break;
+                }
             }
 
-        },
-    );
+            const now = new Date();
+
+            let balanceValidationFailed = false;
+
+            const httpsAgent = new Agent({ rejectUnauthorized: false });
+
+            if (value === null || expiresAt < now) {
+                const { TOKEN_API_URL, TOKEN_API_USERNAME, TOKEN_API_PASSWORD } = process.env;
+
+                // const tokenRequestDurationTimestamps = { start: performance.now(), end: null };
+                const tokenRequestDurationTimestamps: {
+                    start: number;
+                    end: number | null; // Permitir que end sea number o null
+                } = { start: 0, end: null };
+
+                const token = await axios({
+                    method: 'post',
+                    url: TOKEN_API_URL,
+                    data: {
+                        username: TOKEN_API_USERNAME,
+                        password: TOKEN_API_PASSWORD
+                    },
+                    httpsAgent,
+                })
+                    .then((res: AxiosResponse) => {
+                        if (res.headers.authorization) return res.headers.authorization.substring(7);
+                    })
+                    .catch((err: AxiosError) => {
+                        tokenRequestDurationTimestamps.end = performance.now();
+                        if (err.response) {
+                            const { data, status } = err.response;
+                            const errorData = { data, status, tokenRequestDurationTimestamps };
+                            specialConsoleLog(phone, 'TOKEN_REQUEST_ERROR', errorData);
+                        }
+                        console.log('Error:');
+                        console.log(err);
+                    });
+                if (!token) balanceValidationFailed = true;
+                else {
+                    req.app.locals.token = {
+                        value: token,
+                        expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 23),
+                    };
+                }
+            }
+
+            if (!balanceValidationFailed) {
+                const {
+                    API_URL,
+                    API_COUNTRY,
+                    API_SESSION_ID
+                } = process.env;
+
+                const requestBody = {
+                    cellularNumber: phone,
+                    channel: "PDC"
+                };
+
+                const packRenovableApiResponse = await axios({
+                    method: 'post',
+                    url: API_URL,
+                    headers: {
+                        Country: API_COUNTRY,
+                        'Session-Id': API_SESSION_ID
+                    },
+                    data: requestBody,
+                    httpsAgent,
+                })
+                    .then((res: AxiosResponse) => {
+                        let responseCode, responseMessage, packId, handle;
+
+                        if (res.data.code) {
+                            responseCode = res.data.code;
+                            responseMessage = res.data.description;
+                        } else {
+                            responseCode = res.data.responseCode;
+                            responseMessage = res.data.responseMessage;
+                            packId = res.data.pack?.packId;
+                            handle = res.data.handle;
+                        }
+
+                        return { responseCode, responseMessage, packId, handle };
+                    })
+                    .catch((err: AxiosError) => {
+                        if (err.response) {
+                            const { data, status } = err.response;
+                            specialConsoleLog(phone, 'PACK_REQUEST_ERROR', { data, status });
+                        }
+                        console.log('Error:');
+                        console.log(err);
+                        return { responseCode: '', responseMessage: '', packId: '', handle: '' };
+                    });
+
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200);
+            // res.end(result);
+        } else {
+            console.error('inArguments invalid.');
+            return res.status(400).end();
+        }
+    });
 };
 
-const edit = (req: any, res: any) => {
+export const edit = (req: Request, res: Response) => {
     logData(req);
-    res.send(200, 'Edit');
+    res.send(200).json('Edit');
 };
 
-const save = (req: any, res: any) => {
+export const save = (req: Request, res: Response) => {
     logData(req);
-    res.send(200, 'Save');
+    res.send(200).json('Save');
 };
 
-const publish = (req: any, res: any) => {
+export const publish = (req: Request, res: Response) => {
     logData(req);
-    res.send(200, 'Publish');
+    res.send(200).json('Publish');
 };
 
-const validate = (req: any, res: any) => {
+export const validate = (req: Request, res: Response) => {
     logData(req);
-    res.send(200, 'Validate');
+    res.send(200).json('Validate');
 };
 
-const stop = (req: any, res: any) => {
+export const stop = (req: Request, res: Response) => {
     logData(req);
-    res.send(200, 'Stop');
+    res.send(200).json('Stop');
 };
 
-
-function millisToMinutesAndSeconds(millis: number): string {
+function millisToMinutesAndSeconds(millis: number) {
     const minutes = Math.floor(millis / 60000);
     const seconds = ((millis % 60000) / 1000).toFixed(0);
     return Number(seconds) == 60 ? minutes + 1 + 'm' : minutes + 'm ' + (Number(seconds) < 10 ? '0' : '') + seconds + 's';
 }
 
-function specialConsoleLog (
-    phoneNumber: string,
-    eventName: string,
-    durationTimestamps: DurationTimestampsPair,
-    data: any,
-): void {
+function specialConsoleLog(phoneNumber: string, eventName: string, data: any) {
     const now = new Date();
     const todayDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
     const currentTime = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
 
-    const { start, end } = durationTimestamps;
-    let duration = '-';
-    if (start && end) duration = millisToMinutesAndSeconds(end - start);
-
     const jsonifiedData = JSON.stringify(data);
 
-    console.log(`${todayDate}|${currentTime}|${phoneNumber}|${eventName}|${duration}|${jsonifiedData}`);
+    console.log(`${todayDate}|${currentTime}|${phoneNumber}|${eventName}|${jsonifiedData}`);
 }
-
-export default {
-    logExecuteData,
-    execute,
-    edit,
-    save,
-    publish,
-    validate,
-    stop,
-};

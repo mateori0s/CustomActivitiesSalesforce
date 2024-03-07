@@ -9,7 +9,7 @@
     "lang": {
         "en-US": {
             "name": "DINAMICALLY_REPLACED",
-            "description": "Revisa si un número de celular puede o no comprar un pack.",
+            "description": "Revisa si la linea tiene pack pendiente.",
             "step1Label": "Configure Activity"
         }
     },
@@ -17,17 +17,18 @@
         "execute": {
             "inArguments": [
                 { "dataExtension": "" },
-                { "campoMensaje": "" }
+                { "channel": "" }
             ],
             "outArguments": [
-                { "mensajeTraducido": "" },
-                { "error": false }
+                { "responseCode": ""},
+                {"responseMessage": ""},
+                {"packId": ""},
+                {"handle": ""}
             ],
             "url": "DINAMICALLY_REPLACED",
             "headers": "DINAMICALLY_REPLACED",
             "verb": "POST",
             "body": "",
-            "header": "",
             "format": "json",
             "useJwt": true,
             "timeout": 10000,
@@ -76,10 +77,10 @@
                     {
                         "dataExtension": {
                             "dataType": "Text",
-                            "isNullable": false,
+                            "isNullable": true,
                             "direction": "in"
                         },
-                        "campoMensaje": {
+                        "channel": {
                             "dataType": "Text",
                             "isNullable": false,
                             "direction": "in"
@@ -87,13 +88,23 @@
                     }
                 ],
                 "outArguments": [{
-                    "mensajeTraducido": {
+                    "responseCode": {
+                        "dataType": "Decimal",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "responseMessage": {
                         "dataType": "Text",
                         "direction": "out",
                         "access": "visible"
                     },
-                    "error": {
-                        "dataType": "Boolean",
+                    "packId": {
+                        "dataType": "Text",
+                        "direction": "out",
+                        "access": "visible"
+                    },
+                    "handle": {
+                        "dataType": "Decimal",
                         "direction": "out",
                         "access": "visible"
                     }

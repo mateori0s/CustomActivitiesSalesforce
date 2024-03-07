@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Consulta de oferta</title>
+        <title>Consulta de pack pendiente </title>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie-edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,7 +16,7 @@
                     baseUrl: 'js'
                 };
                 var dependencies = [
-                    'customActivity'    
+                    'customActivity'
                 ];
                 require(config, dependencies);
             })();
@@ -24,15 +24,15 @@
     </head>
     <body>
         <div class="main-block">
-            <h3>Traspaso de SMS</h3>
-            <span>Traspasa mensaje a CA Broker</span>
+            <h3>Consulta de pack pendiente</h3>
+            <span>Revisa si una linea tiene pack pendiente.</span>
             <form action="/">
                 <hr>
                 <label id="icon" for="dataExtension"><i class="fa-solid fa-comment-sms"></i></label>
                 <input type="text" name="dataExtension" id="dataExtension" placeholder="Data Extension" required="" class="text-input">
-                <br>
-                <label id="icon" for="campoMensaje"><i class="fa-solid fa-comment-sms"></i></label>
-                <input type="text" name="campoMensaje" id="campoMensaje" placeholder="Campo mensaje" required="" class="text-input">
+                <hr>
+                <label id="icon" for="channel"><i class="fa-solid fa-comment-sms"></i></label>
+                <input type="text" name="channel" id="channel" placeholder="Canal" required="" class="text-input">
             </form>
         </div>
     </body>
